@@ -887,6 +887,27 @@
   }
 
   function showPin(){
+    // auto-lock when app loses focus
+let lockTimer = null;
+
+function lockNow(){
+  if (document.body.classList.contains("locked")) return;
+  try { document.getElementById("adminOverlay").style.display = "none"; } catch(e){}
+  document.body.classList.add("locked");
+  showPin();
+}
+
+function scheduleLock(){
+  clearTimeout(lockTimer);
+  lockTimer = setTimeout(lockNow, 0);
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") scheduleLock();
+});
+
+window.addEventListener("pagehide", scheduleLock);
+window.addEventListener("blur", scheduleLock);
     openOverlay("pinOverlay");
     document.getElementById("pinError").style.display = "none";
     document.getElementById("pinInput").value = "";
@@ -1092,6 +1113,7 @@
 
 </body>
 </html>
+
 
 
 
