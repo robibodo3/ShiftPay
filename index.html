@@ -5,102 +5,107 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ShiftPay</title>
 
-<!-- PWA -->
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0b1220">
 <link rel="apple-touch-icon" href="icon-192.png">
 
 <style>
   :root{
-    --bg: #0b1220;
-    --line: rgba(255,255,255,0.10);
-    --text: rgba(255,255,255,0.92);
-    --muted: rgba(255,255,255,0.65);
+    --bg:#0b1220;
+    --line:rgba(255,255,255,0.10);
+    --text:rgba(255,255,255,0.92);
+    --muted:rgba(255,255,255,0.65);
 
-    --purple: #7c3aed;
-    --green: #22c55e;
-    --amber: #f59e0b;
-    --blue:  #3b82f6;
-    --pink:  #ec4899;
+    --purple:#7c3aed;
+    --green:#22c55e;
+    --amber:#f59e0b;
+    --blue:#3b82f6;
+    --pink:#ec4899;
 
-    --shadow: 0 12px 30px rgba(0,0,0,0.35);
-    --radius: 18px;
+    --shadow:0 12px 30px rgba(0,0,0,0.35);
+    --radius:18px;
   }
 
-  *{ box-sizing: border-box; }
+  *{ box-sizing:border-box; }
   body{
     margin:0;
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
     background:
       radial-gradient(1200px 700px at 20% 10%, rgba(124,58,237,0.22), transparent 60%),
       radial-gradient(900px 600px at 80% 20%, rgba(34,197,94,0.18), transparent 60%),
       radial-gradient(900px 700px at 50% 100%, rgba(59,130,246,0.16), transparent 60%),
       var(--bg);
-    color: var(--text);
-    padding: 14px;
+    color:var(--text);
+    padding:14px;
   }
 
-  .wrap{ max-width: 1020px; margin:0 auto; }
+  /* FIX: când e deschis overlay, nu mai scroll-ează fundalul */
+  body.modal-open{
+    overflow:hidden;
+    touch-action:none;
+  }
+
+  .wrap{ max-width:1020px; margin:0 auto; }
 
   .header{
     padding:16px;
     border:1px solid var(--line);
-    border-radius: var(--radius);
-    background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04));
-    box-shadow: var(--shadow);
-    position: relative;
+    border-radius:var(--radius);
+    background:linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04));
+    box-shadow:var(--shadow);
+    position:relative;
   }
 
   .topbar{
     display:flex; gap:10px;
-    justify-content: space-between;
+    justify-content:space-between;
     align-items:flex-start;
-    flex-wrap: wrap;
+    flex-wrap:wrap;
   }
 
   h1{ margin:0; font-size:22px; letter-spacing:-0.02em; }
 
   .meta{
     margin-top:6px;
-    color: var(--muted);
-    font-size: 13px;
+    color:var(--muted);
+    font-size:13px;
     line-height:1.35;
   }
 
   .controls{
     display:flex; gap:10px;
     align-items:center;
-    flex-wrap: wrap;
+    flex-wrap:wrap;
   }
 
   select, button, input[type="number"]{
     padding:10px 12px;
-    border-radius: 12px;
+    border-radius:12px;
     border:1px solid rgba(255,255,255,0.14);
-    background: rgba(255,255,255,0.06);
-    color: var(--text);
-    outline: none;
+    background:rgba(255,255,255,0.06);
+    color:var(--text);
+    outline:none;
     font-size:14px;
   }
   select:focus, button:focus, input[type="number"]:focus{
-    border-color: rgba(124,58,237,0.65);
-    box-shadow: 0 0 0 3px rgba(124,58,237,0.20);
+    border-color:rgba(124,58,237,0.65);
+    box-shadow:0 0 0 3px rgba(124,58,237,0.20);
   }
 
   button{ cursor:pointer; }
   button.danger{
-    border-color: rgba(239,68,68,0.35);
-    background: rgba(239,68,68,0.10);
+    border-color:rgba(239,68,68,0.35);
+    background:rgba(239,68,68,0.10);
   }
   button.ghost{
-    border-color: rgba(255,255,255,0.14);
-    background: rgba(255,255,255,0.04);
+    border-color:rgba(255,255,255,0.14);
+    background:rgba(255,255,255,0.04);
   }
 
   .adminCorner{
     position:absolute;
     top:12px; right:12px;
-    padding: 8px 10px;
+    padding:8px 10px;
     font-size:12px;
     border-radius:999px;
   }
@@ -111,25 +116,25 @@
     padding:8px 12px;
     border-radius:999px;
     border:1px solid var(--line);
-    background: rgba(255,255,255,0.06);
-    color: var(--muted);
+    background:rgba(255,255,255,0.06);
+    color:var(--muted);
     font-size:12px;
   }
 
-  .dot{ width:8px; height:8px; border-radius:99px; background: var(--purple); }
-  .dot.amber{ background: var(--amber); }
-  .dot.blue{ background: var(--blue); }
-  .dot.pink{ background: var(--pink); }
+  .dot{ width:8px; height:8px; border-radius:99px; background:var(--purple); }
+  .dot.amber{ background:var(--amber); }
+  .dot.blue{ background:var(--blue); }
+  .dot.pink{ background:var(--pink); }
 
   .pillToggle{ cursor:pointer; user-select:none; }
-  .rateShown{ display:none; margin-left:8px; color: rgba(255,255,255,0.92); }
-  .rateHidden{ margin-left:8px; color: rgba(255,255,255,0.55); }
+  .rateShown{ display:none; margin-left:8px; color:rgba(255,255,255,0.92); }
+  .rateHidden{ margin-left:8px; color:rgba(255,255,255,0.55); }
   .pillToggle.open .rateShown{ display:inline; }
   .pillToggle.open .rateHidden{ display:none; }
 
   .note{
     margin-top:10px;
-    color: rgba(34,197,94,0.92);
+    color:rgba(34,197,94,0.92);
     font-size:13px;
     display:none;
   }
@@ -137,9 +142,9 @@
   .tableCard{
     margin-top:12px;
     border:1px solid var(--line);
-    border-radius: var(--radius);
-    background: rgba(255,255,255,0.04);
-    box-shadow: var(--shadow);
+    border-radius:var(--radius);
+    background:rgba(255,255,255,0.04);
+    box-shadow:var(--shadow);
     overflow:hidden;
   }
 
@@ -147,13 +152,13 @@
   thead th{
     text-align:left;
     font-size:12px;
-    color: var(--muted);
+    color:var(--muted);
     padding:12px 12px;
     border-bottom:1px solid var(--line);
-    background: rgba(255,255,255,0.05);
-    position: sticky;
+    background:rgba(255,255,255,0.05);
+    position:sticky;
     top:0;
-    backdrop-filter: blur(6px);
+    backdrop-filter:blur(6px);
   }
   tbody td{
     padding:10px 12px;
@@ -161,20 +166,20 @@
     font-size:14px;
     vertical-align:middle;
   }
-  tbody tr:hover{ background: rgba(255,255,255,0.04); }
+  tbody tr:hover{ background:rgba(255,255,255,0.04); }
 
   .datecol{ width:260px; font-weight:800; letter-spacing:0.01em; }
   .endcol{ width:160px; }
   .fieldcol{ width:90px; }
-  .nightcol{ width:160px; font-variant-numeric: tabular-nums; font-weight:900; }
+  .nightcol{ width:160px; font-variant-numeric:tabular-nums; font-weight:900; }
 
   input[type="time"]{
     width:120px;
     padding:8px 10px;
     border-radius:12px;
     border:1px solid rgba(255,255,255,0.16);
-    background: rgba(255,255,255,0.06);
-    color: var(--text);
+    background:rgba(255,255,255,0.06);
+    color:var(--text);
     outline:none;
   }
 
@@ -183,111 +188,119 @@
     padding:10px 10px;
     border-radius:12px;
     border:1px solid rgba(255,255,255,0.16);
-    background: rgba(255,255,255,0.06);
-    color: var(--text);
+    background:rgba(255,255,255,0.06);
+    color:var(--text);
     outline:none;
     font-size:14px;
   }
 
   input[type="checkbox"]{
-    transform: scale(1.25);
-    accent-color: var(--purple);
+    transform:scale(1.25);
+    accent-color:var(--purple);
     cursor:pointer;
   }
 
-  .grid{ display:grid; gap:12px; grid-template-columns: 1fr; margin-top:12px; }
+  .grid{ display:grid; gap:12px; grid-template-columns:1fr; margin-top:12px; }
 
   .box{
     border:1px solid var(--line);
-    border-radius: var(--radius);
-    background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04));
-    box-shadow: var(--shadow);
+    border-radius:var(--radius);
+    background:linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04));
+    box-shadow:var(--shadow);
     padding:14px;
   }
   .row{
     display:flex; gap:14px;
-    justify-content: space-between;
-    flex-wrap: wrap;
+    justify-content:space-between;
+    flex-wrap:wrap;
     align-items:flex-start;
   }
 
   .kpi{ min-width:220px; }
-  .kpiTitle{ color: var(--muted); font-size:12px; display:flex; align-items:center; gap:8px; }
+  .kpiTitle{ color:var(--muted); font-size:12px; display:flex; align-items:center; gap:8px; }
   .kpiValue{ font-weight:950; font-size:26px; letter-spacing:-0.02em; }
   .kpiValue.purple{ color:#c4b5fd; }
   .kpiValue.amber{ color:#fcd34d; }
   .kpiValue.blue{ color:#93c5fd; }
   .kpiValue.pink{ color:#f9a8d4; }
 
-  .mini{ margin-top:6px; font-size:12px; color: var(--muted); }
+  .mini{ margin-top:6px; font-size:12px; color:var(--muted); }
   .money{ white-space:nowrap; }
 
   .totalBox{
     border:1px solid rgba(34,197,94,0.30);
-    background: linear-gradient(180deg, rgba(34,197,94,0.14), rgba(255,255,255,0.04));
+    background:linear-gradient(180deg, rgba(34,197,94,0.14), rgba(255,255,255,0.04));
   }
   .totalLabel{
     font-size:14px;
-    color: rgba(255,255,255,0.75);
+    color:rgba(255,255,255,0.75);
     letter-spacing:0.06em;
     font-weight:900;
-    text-transform: uppercase;
+    text-transform:uppercase;
   }
   .totalBig{
     font-size:46px;
-    font-weight: 1000;
-    color: var(--green);
+    font-weight:1000;
+    color:var(--green);
     letter-spacing:-0.03em;
     margin-top:6px;
   }
 
   /* overlays */
   .overlay{
-    position: fixed;
+    position:fixed;
     inset:0;
-    background: rgba(0,0,0,0.58);
-    backdrop-filter: blur(10px);
+    background:rgba(0,0,0,0.58);
+    backdrop-filter:blur(10px);
     display:none;
     align-items:center;
     justify-content:center;
     padding:16px;
     z-index:9999;
+
+    /* FIX: overlay poate scroll-a singur dacă e nevoie */
+    overflow:auto;
+    -webkit-overflow-scrolling:touch;
   }
   .modal{
     width:100%;
     max-width:520px;
     border:1px solid rgba(255,255,255,0.14);
-    border-radius: 22px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.05));
-    box-shadow: 0 18px 70px rgba(0,0,0,0.55);
+    border-radius:22px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.05));
+    box-shadow:0 18px 70px rgba(0,0,0,0.55);
     padding:16px;
-    overflow:hidden;
+
+    /* FIX: modal scroll intern */
+    max-height:90vh;
+    overflow:auto;
+    -webkit-overflow-scrolling:touch;
   }
   .modalHeader{ display:flex; gap:14px; align-items:center; }
   .meme{
     width:84px; height:84px;
     border-radius:18px;
     border:1px solid rgba(255,255,255,0.14);
-    background: rgba(255,255,255,0.06);
+    background:rgba(255,255,255,0.06);
     display:flex; align-items:center; justify-content:center;
     overflow:hidden;
-    flex: 0 0 auto;
+    flex:0 0 auto;
   }
   .modal h2{ margin:0; font-size:18px; letter-spacing:-0.02em; }
-  .modal p{ margin:6px 0 0; color: var(--muted); font-size:13px; line-height:1.35; }
+  .modal p{ margin:6px 0 0; color:var(--muted); font-size:13px; line-height:1.35; }
   .modalBody{ margin-top:14px; display:grid; gap:10px; }
   .actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
   .actions button{ flex:1; min-width:140px; }
-  .error{ margin-top:8px; color: rgba(239,68,68,0.95); font-size:13px; display:none; }
+  .error{ margin-top:8px; color:rgba(239,68,68,0.95); font-size:13px; display:none; }
 
   .adminOverlay{ justify-content:flex-end; align-items:flex-start; }
   .adminModal{ margin-top:12px; margin-right:12px; max-width:480px; }
 
   .formGrid{ display:grid; gap:10px; }
   .field{ display:grid; gap:6px; }
-  .label{ font-size:12px; color: rgba(255,255,255,0.80); font-weight:800; letter-spacing:0.02em; }
-  .help{ font-size:12px; color: rgba(255,255,255,0.55); line-height:1.35; }
-  .rateRow{ display:grid; gap:10px; grid-template-columns: 1fr 1fr 1fr; }
+  .label{ font-size:12px; color:rgba(255,255,255,0.80); font-weight:800; letter-spacing:0.02em; }
+  .help{ font-size:12px; color:rgba(255,255,255,0.55); line-height:1.35; }
+  .rateRow{ display:grid; gap:10px; grid-template-columns:1fr 1fr 1fr; }
   @media (max-width:520px){ .rateRow{ grid-template-columns:1fr; } }
 
   .locked #app{
@@ -301,7 +314,7 @@
     padding:10px 16px;
     border:none;
     border-radius:12px;
-    font-weight:800;
+    font-weight:900;
     cursor:pointer;
     transition:0.2s;
     color:white;
@@ -319,7 +332,6 @@
   <div class="modal">
     <div class="modalHeader">
       <div class="meme" aria-hidden="true">
-        <!-- grumpy lock cat -->
         <svg viewBox="0 0 120 120" width="84" height="84">
           <defs>
             <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
@@ -348,9 +360,10 @@
     <div class="modalBody">
       <input id="pinInput" type="password" inputmode="numeric" pattern="[0-9]*" placeholder="PIN" autocomplete="off">
       <div class="actions">
-        <button id="pinUnlock">Unlock</button>
+        <button id="pinUnlock" type="button">Unlock</button>
       </div>
       <div class="error" id="pinError">Wrong PIN.</div>
+      <div class="help" style="margin-top:2px;">Tip: dacă PIN-ul e corect, intră automat (nu trebuie să apeși).</div>
     </div>
   </div>
 </div>
@@ -376,8 +389,8 @@
     <div class="modalBody">
       <input id="adminCode" type="password" inputmode="numeric" pattern="[0-9]*" placeholder="Security code">
       <div class="actions">
-        <button id="adminUnlock">Unlock</button>
-        <button class="ghost" id="adminClose">Close</button>
+        <button id="adminUnlock" type="button">Unlock</button>
+        <button class="ghost" id="adminClose" type="button">Close</button>
       </div>
       <div class="error" id="adminError">Wrong code.</div>
 
@@ -422,17 +435,16 @@
           </div>
 
           <div class="actions">
-            <button id="adminSave">Save</button>
-            <button class="danger" id="adminLock">Lock</button>
+            <button id="adminSave" type="button">Save</button>
+            <button class="danger" id="adminLock" type="button">Lock</button>
           </div>
 
-          <!-- Backup section (jos) -->
           <hr style="margin:20px 0; opacity:0.2;">
 
           <div>
             <div class="label" style="font-size:14px;">Backup & Restore</div>
             <div class="help" style="margin-top:6px;">
-              Exportă datele înainte de <b>Clear data</b> / reset. După, faci Import și îți revine tot.
+              Înainte de <b>Clear data</b> / reset: fă <b>Export</b>. După: <b>Import</b> și revine tot.
             </div>
 
             <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
@@ -442,7 +454,7 @@
             </div>
 
             <div class="help" style="margin-top:10px;">
-              Fișierul se numește: <b>shiftpay-backup.json</b>
+              Fișier: <b>shiftpay-backup.json</b>
             </div>
           </div>
 
@@ -454,7 +466,7 @@
 
 <div class="wrap" id="app">
   <div class="header">
-    <button class="ghost adminCorner" id="adminBtn">Admin</button>
+    <button class="ghost adminCorner" id="adminBtn" type="button">Admin</button>
 
     <div class="topbar">
       <div>
@@ -467,7 +479,7 @@
       <div class="controls">
         <select id="monthSelect" aria-label="Month"></select>
         <input id="yearInput" type="number" min="2000" max="2100" step="1" style="width:110px" aria-label="Year">
-        <button class="danger" id="clearMonth">Clear month</button>
+        <button class="danger" id="clearMonth" type="button">Clear month</button>
       </div>
     </div>
 
@@ -533,7 +545,7 @@
 </div>
 
 <script>
-  // ===== FIXED PIN + ADMIN CODE =====
+  // ===== PIN + ADMIN CODE =====
   const DEFAULT_PIN = "9705213";
   const PIN_HASH_KEY = "salary_pin_hash_fixed_v1";
   const ADMIN_CODE = "1997";
@@ -858,7 +870,20 @@
   yearInput.addEventListener("change", applyYearChange);
   yearInput.addEventListener("keydown", (e) => { if(e.key === "Enter") applyYearChange(); });
 
-  // pin init
+  // ===== Overlay helpers (fix scroll) =====
+  function openOverlay(id){
+    document.getElementById(id).style.display = "flex";
+    document.body.classList.add("modal-open");
+  }
+  function closeOverlay(id){
+    document.getElementById(id).style.display = "none";
+    // dacă ambele sunt închise, scoatem modal-open
+    const pinOpen = document.getElementById("pinOverlay").style.display === "flex";
+    const adminOpen = document.getElementById("adminOverlay").style.display === "flex";
+    if(!pinOpen && !adminOpen) document.body.classList.remove("modal-open");
+  }
+
+  // ===== PIN =====
   async function ensurePinInitialized(){
     const stored = localStorage.getItem(PIN_HASH_KEY);
     if(!stored){
@@ -867,14 +892,43 @@
   }
 
   function showPin(){
-    document.getElementById("pinOverlay").style.display = "flex";
+    openOverlay("pinOverlay");
     document.getElementById("pinError").style.display = "none";
     document.getElementById("pinInput").value = "";
     setTimeout(() => document.getElementById("pinInput").focus(), 60);
   }
+
   function hidePin(){
-    document.getElementById("pinOverlay").style.display = "none";
+    closeOverlay("pinOverlay");
     document.body.classList.remove("locked");
+  }
+
+  let pinTryToken = 0; // ca să evităm multiple checks
+
+  async function tryUnlockAuto(){
+    const input = document.getElementById("pinInput");
+    const pin = (input.value || "").trim();
+    const err = document.getElementById("pinError");
+    const stored = localStorage.getItem(PIN_HASH_KEY);
+
+    if(pin.length < 4){
+      err.style.display = "none";
+      return;
+    }
+
+    const myToken = ++pinTryToken;
+    const hash = await sha256(pin);
+    if(myToken !== pinTryToken) return; // a tastat între timp
+
+    if(hash === stored){
+      err.style.display = "none";
+      hidePin();
+      refreshMetaAndRates();
+      setYearPill();
+      renderMonth();
+    } else {
+      // nu afișăm "Wrong" la fiecare tastă, doar când încearcă cu buton / enter
+    }
   }
 
   async function unlockWithPin(){
@@ -890,6 +944,7 @@
 
     const hash = await sha256(pin);
     if(hash === stored){
+      err.style.display = "none";
       hidePin();
       refreshMetaAndRates();
       setYearPill();
@@ -902,19 +957,20 @@
 
   document.getElementById("pinUnlock").addEventListener("click", unlockWithPin);
   document.getElementById("pinInput").addEventListener("keydown", (e) => { if(e.key === "Enter") unlockWithPin(); });
+  document.getElementById("pinInput").addEventListener("input", () => { tryUnlockAuto(); });
 
-  // admin
+  // ===== ADMIN =====
   let adminUnlocked = false;
 
   function showAdmin(){
-    document.getElementById("adminOverlay").style.display = "flex";
+    openOverlay("adminOverlay");
     document.getElementById("adminError").style.display = "none";
     document.getElementById("adminCode").value = "";
     document.getElementById("adminPanel").style.display = "none";
     adminUnlocked = false;
     setTimeout(() => document.getElementById("adminCode").focus(), 60);
   }
-  function hideAdmin(){ document.getElementById("adminOverlay").style.display = "none"; }
+  function hideAdmin(){ closeOverlay("adminOverlay"); }
 
   document.getElementById("adminBtn").addEventListener("click", showAdmin);
   document.getElementById("adminClose").addEventListener("click", hideAdmin);
@@ -959,7 +1015,6 @@
       fieldRate: Number.isFinite(field) && field >= 0 ? field : DEFAULTS.fieldRate,
       foodRate:  Number.isFinite(food) && food >= 0 ? food : DEFAULTS.foodRate
     };
-
     saveSettings(SETTINGS);
 
     const newPin = (document.getElementById("setPin").value || "").trim();
@@ -981,14 +1036,14 @@
     hideAdmin();
   });
 
-  // ===== BACKUP & RESTORE =====
+  // ===== BACKUP / RESTORE =====
   function exportData(){
     const backup = {};
     for (let i = 0; i < localStorage.length; i++){
       const k = localStorage.key(i);
       backup[k] = localStorage.getItem(k);
     }
-    const blob = new Blob([JSON.stringify(backup)], { type: "application/json" });
+    const blob = new Blob([JSON.stringify(backup)], { type:"application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -1002,14 +1057,10 @@
     const reader = new FileReader();
     reader.onload = (event) => {
       let data;
-      try {
-        data = JSON.parse(event.target.result);
-      } catch (e) {
-        alert("Fișier invalid (nu e JSON).");
-        return;
-      }
+      try{ data = JSON.parse(event.target.result); }
+      catch(e){ alert("Fișier invalid (nu e JSON)."); return; }
 
-      for (const key in data){
+      for(const key in data){
         localStorage.setItem(key, data[key]);
       }
 
@@ -1019,38 +1070,25 @@
     reader.readAsText(file);
   }
 
-  // Bind buttons when DOM is ready
-  document.addEventListener("DOMContentLoaded", () => {
-    const btnExport = document.getElementById("btnExport");
-    const btnImport = document.getElementById("btnImport");
-    const importFile = document.getElementById("importFile");
-
-    if(btnExport) btnExport.addEventListener("click", exportData);
-
-    if(btnImport && importFile){
-      btnImport.addEventListener("click", () => importFile.click());
-      importFile.addEventListener("change", (e) => {
-        const file = e.target.files && e.target.files[0];
-        if(!file) return;
-
-        // Optional confirm
-        const ok = confirm("Importul va suprascrie datele curente. Continuăm?");
-        if(!ok) { importFile.value = ""; return; }
-
-        importDataFromFile(file);
-      });
-    }
+  document.getElementById("btnExport").addEventListener("click", exportData);
+  document.getElementById("btnImport").addEventListener("click", () => document.getElementById("importFile").click());
+  document.getElementById("importFile").addEventListener("change", (e) => {
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
+    const ok = confirm("Importul va suprascrie datele curente. Continuăm?");
+    if(!ok){ e.target.value = ""; return; }
+    importDataFromFile(file);
   });
 
-  // start
+  // ===== start =====
   refreshMetaAndRates();
+
   (async () => {
     await ensurePinInitialized();
     showPin();
   })();
 </script>
 
-<!-- PWA service worker registration -->
 <script>
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./sw.js", { scope: "./" });
