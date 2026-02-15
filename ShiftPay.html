@@ -1,0 +1,1016 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Month Tracker</title>
+
+<style>
+  :root{
+    --bg: #0b1220;
+    --line: rgba(255,255,255,0.10);
+    --text: rgba(255,255,255,0.92);
+    --muted: rgba(255,255,255,0.65);
+
+    --purple: #7c3aed;
+    --green: #22c55e;
+    --amber: #f59e0b;
+    --blue:  #3b82f6;
+    --pink:  #ec4899;
+
+    --shadow: 0 12px 30px rgba(0,0,0,0.35);
+    --radius: 18px;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background:
+      radial-gradient(1200px 700px at 20% 10%, rgba(124,58,237,0.22), transparent 60%),
+      radial-gradient(900px 600px at 80% 20%, rgba(34,197,94,0.18), transparent 60%),
+      radial-gradient(900px 700px at 50% 100%, rgba(59,130,246,0.16), transparent 60%),
+      var(--bg);
+    color: var(--text);
+    padding: 14px;
+  }
+
+  .wrap { max-width: 1020px; margin: 0 auto; }
+
+  .header {
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04));
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+
+  .topbar{
+    display:flex; gap:10px; justify-content: space-between; align-items: flex-start; flex-wrap: wrap;
+  }
+
+  h1{
+    margin: 0;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+  }
+
+  .meta{
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  .controls{
+    display:flex; gap:10px; align-items:center; flex-wrap: wrap;
+  }
+
+  select, button, input[type="number"]{
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+    outline: none;
+    font-size: 14px;
+  }
+  select:focus, button:focus, input[type="number"]:focus{
+    border-color: rgba(124,58,237,0.65);
+    box-shadow: 0 0 0 3px rgba(124,58,237,0.20);
+  }
+  button{ cursor: pointer; }
+  button.danger{
+    border-color: rgba(239,68,68,0.35);
+    background: rgba(239,68,68,0.10);
+  }
+  button.ghost{
+    border-color: rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.04);
+  }
+
+  .adminCorner{
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 8px 10px;
+    font-size: 12px;
+    border-radius: 999px;
+  }
+
+  .pills { margin-top: 12px; display:flex; gap:10px; flex-wrap: wrap; }
+  .pill{
+    display:inline-flex; align-items:center; gap:8px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,0.06);
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .dot{ width: 8px; height: 8px; border-radius: 99px; background: var(--purple); }
+  .dot.amber{ background: var(--amber); }
+  .dot.blue{ background: var(--blue); }
+  .dot.pink{ background: var(--pink); }
+
+  .pillToggle{ cursor:pointer; user-select:none; }
+  .rateShown{ display:none; margin-left:8px; color: rgba(255,255,255,0.92); }
+  .rateHidden{ margin-left:8px; color: rgba(255,255,255,0.55); }
+  .pillToggle.open .rateShown{ display:inline; }
+  .pillToggle.open .rateHidden{ display:none; }
+
+  .note {
+    margin-top: 10px;
+    color: rgba(34,197,94,0.92);
+    font-size: 13px;
+    display:none;
+  }
+
+  .tableCard{
+    margin-top: 12px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(255,255,255,0.04);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  table { width:100%; border-collapse: collapse; }
+  thead th{
+    text-align:left;
+    font-size: 12px;
+    color: var(--muted);
+    padding: 12px 12px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(255,255,255,0.05);
+    position: sticky;
+    top: 0;
+    backdrop-filter: blur(6px);
+  }
+  tbody td{
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    font-size: 14px;
+    vertical-align: middle;
+  }
+  tbody tr:hover{ background: rgba(255,255,255,0.04); }
+
+  .datecol{ width: 260px; font-weight: 700; letter-spacing: 0.01em; }
+  .endcol{ width: 160px; }
+  .fieldcol{ width: 90px; }
+  .nightcol{ width: 160px; font-variant-numeric: tabular-nums; font-weight: 800; }
+
+  input[type="time"]{
+    width: 120px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.16);
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+    outline: none;
+  }
+
+  input[type="password"], input[type="text"]{
+    width: 100%;
+    padding: 10px 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.16);
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+    outline: none;
+    font-size: 14px;
+  }
+
+  input[type="checkbox"]{
+    transform: scale(1.25);
+    accent-color: var(--purple);
+    cursor: pointer;
+  }
+
+  .grid{
+    display:grid;
+    gap: 12px;
+    grid-template-columns: 1fr;
+    margin-top: 12px;
+  }
+
+  .box{
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04));
+    box-shadow: var(--shadow);
+    padding: 14px;
+  }
+
+  .row{
+    display:flex;
+    gap: 14px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .kpi{ min-width: 220px; }
+  .kpiTitle{ color: var(--muted); font-size: 12px; display:flex; align-items:center; gap:8px; }
+  .kpiValue{ font-weight: 900; font-size: 26px; letter-spacing: -0.02em; }
+  .kpiValue.purple{ color: #c4b5fd; }
+  .kpiValue.amber{ color: #fcd34d; }
+  .kpiValue.blue{ color: #93c5fd; }
+  .kpiValue.pink{ color: #f9a8d4; }
+
+  .mini{ margin-top: 6px; font-size: 12px; color: var(--muted); }
+  .money { white-space: nowrap; }
+
+  .totalBox{
+    border: 1px solid rgba(34,197,94,0.30);
+    background: linear-gradient(180deg, rgba(34,197,94,0.14), rgba(255,255,255,0.04));
+  }
+  .totalLabel{
+    font-size: 14px;
+    color: rgba(255,255,255,0.75);
+    letter-spacing: 0.06em;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+  .totalBig{
+    font-size: 46px;
+    font-weight: 950;
+    color: var(--green);
+    letter-spacing: -0.03em;
+    margin-top: 6px;
+  }
+
+  /* ===== OVERLAYS ===== */
+  .overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.58);
+    backdrop-filter: blur(10px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 9999;
+  }
+  .modal{
+    width: 100%;
+    max-width: 520px;
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 22px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.05));
+    box-shadow: 0 18px 70px rgba(0,0,0,0.55);
+    padding: 16px;
+    overflow: hidden;
+  }
+
+  .modalHeader{ display:flex; gap:14px; align-items: center; }
+  .meme{
+    width: 84px; height: 84px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.06);
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden; flex: 0 0 auto;
+  }
+  .modal h2{ margin:0; font-size:18px; letter-spacing:-0.02em; }
+  .modal p{ margin:6px 0 0; color: var(--muted); font-size:13px; line-height:1.35; }
+  .modalBody{ margin-top:14px; display:grid; gap:10px; }
+  .actions{ display:flex; gap:10px; flex-wrap: wrap; margin-top:10px; }
+  .actions button{ flex:1; min-width: 140px; }
+
+  .error{
+    margin-top: 8px;
+    color: rgba(239,68,68,0.95);
+    font-size: 13px;
+    display:none;
+  }
+
+  .adminOverlay{
+    justify-content: flex-end;
+    align-items: flex-start;
+  }
+  .adminModal{
+    margin-top: 12px;
+    margin-right: 12px;
+    max-width: 480px;
+  }
+
+  .formGrid{
+    display:grid;
+    gap: 10px;
+  }
+  .field{
+    display:grid;
+    gap: 6px;
+  }
+  .label{
+    font-size: 12px;
+    color: rgba(255,255,255,0.80);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .help{
+    font-size: 12px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.35;
+  }
+  .rateRow{
+    display:grid;
+    gap: 10px;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  @media (max-width: 520px){
+    .rateRow{ grid-template-columns: 1fr; }
+  }
+
+  .locked #app {
+    filter: blur(7px);
+    pointer-events: none;
+    user-select:none;
+  }
+</style>
+</head>
+
+<body class="locked">
+
+<!-- PIN Overlay -->
+<div class="overlay" id="pinOverlay" aria-modal="true" role="dialog">
+  <div class="modal">
+    <div class="modalHeader">
+      <div class="meme" aria-hidden="true">
+        <!-- grumpy lock cat SVG -->
+        <svg viewBox="0 0 120 120" width="84" height="84">
+          <defs>
+            <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0" stop-color="#7c3aed" stop-opacity="0.9"/>
+              <stop offset="1" stop-color="#22c55e" stop-opacity="0.85"/>
+            </linearGradient>
+          </defs>
+          <rect x="6" y="6" width="108" height="108" rx="22" fill="url(#g)" opacity="0.25"/>
+          <path d="M40 50 L30 35 L45 42" fill="#fff" opacity="0.9"/>
+          <path d="M80 50 L90 35 L75 42" fill="#fff" opacity="0.9"/>
+          <circle cx="60" cy="66" r="26" fill="rgba(255,255,255,0.22)"/>
+          <circle cx="50" cy="64" r="4" fill="#fff"/>
+          <circle cx="70" cy="64" r="4" fill="#fff"/>
+          <path d="M54 74 Q60 78 66 74" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <rect x="48" y="78" width="24" height="22" rx="6" fill="rgba(255,255,255,0.22)" stroke="rgba(255,255,255,0.55)"/>
+          <path d="M52 78 v-6 a8 8 0 0 1 16 0 v6" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="4" stroke-linecap="round"/>
+          <text x="60" y="28" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="12" font-family="system-ui" font-weight="700">NOPE</text>
+        </svg>
+      </div>
+      <div>
+        <h2>Locked</h2>
+        <p>Enter PIN to open.</p>
+      </div>
+    </div>
+
+    <div class="modalBody">
+      <input id="pinInput" type="password" inputmode="numeric" pattern="[0-9]*" placeholder="PIN" autocomplete="off">
+      <div class="actions">
+        <button id="pinUnlock">Unlock</button>
+      </div>
+      <div class="error" id="pinError">Wrong PIN.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Admin Overlay (top-right) -->
+<div class="overlay adminOverlay" id="adminOverlay" aria-modal="true" role="dialog">
+  <div class="modal adminModal">
+    <div class="modalHeader">
+      <div class="meme" aria-hidden="true">
+        <svg viewBox="0 0 120 120" width="84" height="84">
+          <rect x="10" y="10" width="100" height="100" rx="22" fill="rgba(59,130,246,0.18)" stroke="rgba(255,255,255,0.18)"/>
+          <path d="M60 30 l20 10 v18c0 18-12 34-20 38c-8-4-20-20-20-38V40z"
+                fill="rgba(255,255,255,0.22)" stroke="rgba(255,255,255,0.55)" stroke-width="3"/>
+          <text x="60" y="70" text-anchor="middle" fill="rgba(255,255,255,0.92)" font-size="18" font-family="system-ui" font-weight="900">1997</text>
+        </svg>
+      </div>
+      <div>
+        <h2>Admin</h2>
+        <p>Security code required.</p>
+      </div>
+    </div>
+
+    <div class="modalBody">
+      <input id="adminCode" type="password" inputmode="numeric" pattern="[0-9]*" placeholder="Security code">
+      <div class="actions">
+        <button id="adminUnlock">Unlock</button>
+        <button class="ghost" id="adminClose">Close</button>
+      </div>
+      <div class="error" id="adminError">Wrong code.</div>
+
+      <div id="adminPanel" style="display:none; margin-top:6px;">
+        <div class="mini" style="margin-top:0;">Admin settings (saved on your phone):</div>
+
+        <div class="formGrid" style="margin-top:10px;">
+          <div class="field">
+            <div class="label">Name</div>
+            <input id="setName" type="text" placeholder="e.g. Robert Bodo">
+            <div class="help">This is shown at the top of the app.</div>
+          </div>
+
+          <div class="field">
+            <div class="label">Company</div>
+            <input id="setCompany" type="text" placeholder="e.g. R - DVS">
+            <div class="help">Also shown at the top of the app.</div>
+          </div>
+
+          <div class="field">
+            <div class="label">Rates</div>
+            <div class="rateRow">
+              <div class="field">
+                <input id="setNight" type="number" step="0.01" min="0" placeholder="Night rate">
+                <div class="help">£ per night hour (used for Night shifts total).</div>
+              </div>
+              <div class="field">
+                <input id="setField" type="number" step="0.01" min="0" placeholder="Field/day">
+                <div class="help">£ per Field day (checked days × this).</div>
+              </div>
+              <div class="field">
+                <input id="setFood"  type="number" step="0.01" min="0" placeholder="Food/day">
+                <div class="help">£ per Food day (Food allowance days × this).</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="label">Change PIN</div>
+            <input id="setPin" type="password" inputmode="numeric" pattern="[0-9]*" placeholder="New PIN (min 4 digits)">
+            <div class="help">Changes the lock PIN. (Only possible from Admin.)</div>
+          </div>
+
+          <div class="actions">
+            <button id="adminSave">Save</button>
+            <button class="danger" id="adminLock">Lock</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap" id="app">
+  <div class="header">
+    <button class="ghost adminCorner" id="adminBtn">Admin</button>
+
+    <div class="topbar">
+      <div>
+        <h1 id="title">Month</h1>
+        <div class="meta" id="metaLine">
+          <b>Name:</b> Robert Bodo &nbsp;&nbsp; <b>Company:</b> R - DVS
+        </div>
+      </div>
+
+      <div class="controls">
+        <select id="monthSelect" aria-label="Month"></select>
+        <input id="yearInput" type="number" min="2000" max="2100" step="1" style="width:110px" aria-label="Year">
+        <button class="danger" id="clearMonth">Clear month</button>
+      </div>
+    </div>
+
+    <div class="pills">
+      <div class="pill pillToggle"><span class="dot"></span>Night rate <span class="rateHidden">• tap</span><span class="rateShown"><b id="pillNight">£3.75</b>/hour</span></div>
+      <div class="pill pillToggle"><span class="dot amber"></span>Field day <span class="rateHidden">• tap</span><span class="rateShown"><b id="pillField">£120</b></span></div>
+      <div class="pill pillToggle"><span class="dot blue"></span>Food <span class="rateHidden">• tap</span><span class="rateShown"><b id="pillFood">£35</b>/day</span></div>
+      <div class="pill pillToggle"><span class="dot pink"></span>Bonus <span class="rateHidden">• tap</span><span class="rateShown">manual</span></div>
+      <div class="pill" id="yearPill"></div>
+    </div>
+
+    <div class="note" id="migrateNote"></div>
+  </div>
+
+  <div class="tableCard">
+    <table>
+      <thead>
+        <tr>
+          <th class="datecol">Date</th>
+          <th class="endcol">End Time</th>
+          <th class="fieldcol">Field</th>
+          <th class="nightcol">Night Hours</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="grid">
+    <div class="box">
+      <div class="row">
+        <div class="kpi">
+          <div class="kpiTitle"><span class="dot"></span>Night shifts</div>
+          <div class="kpiValue purple money" id="nightMoney">0.00 £</div>
+          <div class="mini">Total night hours: <span id="nightHours">0:00</span></div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpiTitle"><span class="dot amber"></span>Field days</div>
+          <div class="kpiValue amber money" id="fieldMoney">0.00 £</div>
+          <div class="mini">Days worked: <span id="fieldDays">0</span></div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpiTitle"><span class="dot blue"></span>Food allowance</div>
+          <div class="kpiValue blue money" id="foodMoneyBig">0.00 £</div>
+          <div class="mini">
+            Days: <input id="foodDays" type="number" min="0" step="1" placeholder="0">
+          </div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpiTitle"><span class="dot pink"></span>Bonus</div>
+          <div class="kpiValue pink money" id="bonusMoneyBig">0.00 £</div>
+          <div class="mini">
+            Amount: <input id="bonus" type="number" min="0" step="0.01" placeholder="0.00">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="box totalBox">
+      <div class="totalLabel">TOTAL</div>
+      <div class="totalBig money" id="grandTotal">0.00 £</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ===== FIXED PIN + ADMIN CODE =====
+  const DEFAULT_PIN = "9705213";
+  const PIN_HASH_KEY = "salary_pin_hash_fixed_v1";
+  const ADMIN_CODE = "1997";
+
+  // ===== SETTINGS =====
+  const SETTINGS_KEY = "salary_settings_global_v1";
+  const DEFAULTS = { name:"Robert Bodo", company:"R - DVS", nightRate:3.75, fieldRate:120, foodRate:35 };
+
+  // Night calculation anchor (kept as-is)
+  const START_MIN = 22 * 60;
+
+  // Year selection
+  const yearInput = document.getElementById("yearInput");
+  yearInput.value = String((new Date()).getFullYear());
+  let CURRENT_YEAR = Number(yearInput.value);
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, (c) => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[c]));
+  }
+  function pad2(n){ return String(n).padStart(2,'0'); }
+  function money(x){ return `${(Math.round(x * 100) / 100).toFixed(2)} £`; }
+  function toHHMM(minutes){
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return `${h}:${pad2(m)}`;
+  }
+  function daysInMonth(year, monthIndex){
+    return new Date(year, monthIndex + 1, 0).getDate();
+  }
+  function nightMinutes(endStr){
+    if(!endStr) return 0;
+    const [h,m] = endStr.split(":").map(Number);
+    let endMin = h * 60 + m;
+    if(endMin < START_MIN) endMin += 24 * 60;
+    return Math.max(0, endMin - START_MIN);
+  }
+
+  async function sha256(text){
+    const enc = new TextEncoder().encode(text);
+    const buf = await crypto.subtle.digest("SHA-256", enc);
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+
+  function loadSettings(){
+    try{
+      const raw = localStorage.getItem(SETTINGS_KEY);
+      if(!raw) return { ...DEFAULTS };
+      const s = JSON.parse(raw);
+      return {
+        name: typeof s.name === "string" ? s.name : DEFAULTS.name,
+        company: typeof s.company === "string" ? s.company : DEFAULTS.company,
+        nightRate: Number.isFinite(Number(s.nightRate)) ? Number(s.nightRate) : DEFAULTS.nightRate,
+        fieldRate: Number.isFinite(Number(s.fieldRate)) ? Number(s.fieldRate) : DEFAULTS.fieldRate,
+        foodRate: Number.isFinite(Number(s.foodRate)) ? Number(s.foodRate) : DEFAULTS.foodRate,
+      };
+    } catch(e){
+      return { ...DEFAULTS };
+    }
+  }
+  function saveSettings(s){
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+  }
+  let SETTINGS = loadSettings();
+
+  function refreshMetaAndRates(){
+    document.getElementById("metaLine").innerHTML =
+      `<b>Name:</b> ${escapeHtml(SETTINGS.name)} &nbsp;&nbsp; <b>Company:</b> ${escapeHtml(SETTINGS.company)}`;
+    document.getElementById("pillNight").textContent = `£${SETTINGS.nightRate}`;
+    document.getElementById("pillField").textContent = `£${SETTINGS.fieldRate}`;
+    document.getElementById("pillFood").textContent  = `£${SETTINGS.foodRate}`;
+  }
+
+  // ===== MONTHS =====
+  const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const monthSelect = document.getElementById("monthSelect");
+  MONTHS.forEach((name, idx) => {
+    const opt = document.createElement("option");
+    opt.value = String(idx);
+    opt.textContent = name;
+    monthSelect.appendChild(opt);
+  });
+  monthSelect.value = String((new Date()).getMonth());
+
+  function setYearPill(){
+    document.getElementById("yearPill").textContent = `Year: ${CURRENT_YEAR}`;
+  }
+
+  // ===== STORAGE =====
+  function legacyFebKey(year){ return `night_hours_feb_${year}`; }
+  function monthKey(year, monthIndex){
+    if (monthIndex === 1) return legacyFebKey(year);
+    return `salary_${year}_${monthIndex}`;
+  }
+  function loadRaw(key){
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : null;
+    } catch(e){
+      return null;
+    }
+  }
+  function saveRaw(key, obj){
+    localStorage.setItem(key, JSON.stringify(obj));
+  }
+  function isNewFormat(obj){
+    return obj && typeof obj === "object" && obj.days && typeof obj.days === "object";
+  }
+  function migrateIfNeededForKey(key, year, monthIndex){
+    const note = document.getElementById("migrateNote");
+    note.style.display = "none";
+    note.textContent = "";
+
+    if (monthIndex !== 1) return;
+
+    const raw = loadRaw(key);
+    if(!raw) return;
+    if(isNewFormat(raw)) return;
+
+    let migratedCount = 0;
+    const newObj = { days: {}, foodDays: 0, bonus: 0 };
+
+    for (const k of Object.keys(raw)) {
+      const v = raw[k];
+      if (typeof v === "string" && v.includes(":")) {
+        newObj.days[k] = { endTime: v, field: false };
+        migratedCount++;
+      }
+    }
+
+    if(migratedCount > 0){
+      saveRaw(key, newObj);
+      note.style.display = "block";
+      note.textContent = `Imported ${migratedCount} saved days ✅ (${MONTHS[monthIndex]} ${year})`;
+    }
+  }
+  function loadData(key){
+    const raw = loadRaw(key);
+    if(!raw) return { days: {}, foodDays: 0, bonus: 0 };
+
+    if(isNewFormat(raw)){
+      return {
+        days: raw.days || {},
+        foodDays: Number(raw.foodDays || 0),
+        bonus: Number(raw.bonus || 0),
+      };
+    }
+
+    const days = {};
+    for (const k of Object.keys(raw)) {
+      const v = raw[k];
+      if (typeof v === "string" && v.includes(":")) days[k] = { endTime: v, field: false };
+    }
+    return { days, foodDays: 0, bonus: 0 };
+  }
+  function saveData(key, data){
+    saveRaw(key, {
+      days: data.days || {},
+      foodDays: Number(data.foodDays || 0),
+      bonus: Number(data.bonus || 0),
+    });
+  }
+
+  // ===== CALC =====
+  function recalc(key){
+    const data = loadData(key);
+
+    let totalNightMin = 0;
+    let fieldDays = 0;
+
+    for (const dStr of Object.keys(data.days)) {
+      const entry = data.days[dStr] || {};
+      if (entry.endTime) totalNightMin += nightMinutes(entry.endTime);
+      if (entry.field === true) fieldDays += 1;
+    }
+
+    const nightPay = (totalNightMin / 60) * SETTINGS.nightRate;
+    const fieldPay = fieldDays * SETTINGS.fieldRate;
+
+    const foodDays = Number(data.foodDays || 0);
+    const foodPay = foodDays * SETTINGS.foodRate;
+
+    const bonus = Number(data.bonus || 0);
+    const grand = nightPay + fieldPay + foodPay + bonus;
+
+    document.getElementById("nightHours").textContent = toHHMM(totalNightMin);
+    document.getElementById("nightMoney").textContent = money(nightPay);
+
+    document.getElementById("fieldDays").textContent = String(fieldDays);
+    document.getElementById("fieldMoney").textContent = money(fieldPay);
+
+    document.getElementById("foodMoneyBig").textContent = money(foodPay);
+    document.getElementById("bonusMoneyBig").textContent = money(bonus);
+
+    document.getElementById("grandTotal").textContent = money(grand);
+  }
+
+  // ===== RENDER MONTH =====
+  function renderMonth(){
+    const monthIndex = Number(monthSelect.value);
+    const year = CURRENT_YEAR;
+    const key = monthKey(year, monthIndex);
+
+    document.getElementById("title").textContent = `${MONTHS[monthIndex]}`;
+
+    migrateIfNeededForKey(key, year, monthIndex);
+
+    const data = loadData(key);
+
+    const foodDaysEl = document.getElementById("foodDays");
+    const bonusEl = document.getElementById("bonus");
+
+    foodDaysEl.value = (data.foodDays || data.foodDays === 0) ? String(data.foodDays) : "";
+    bonusEl.value = (data.bonus || data.bonus === 0) ? String(data.bonus) : "";
+
+    foodDaysEl.oninput = () => {
+      const cur = loadData(key);
+      const v = Number(foodDaysEl.value || 0);
+      cur.foodDays = Number.isFinite(v) && v >= 0 ? v : 0;
+      saveData(key, cur);
+      recalc(key);
+    };
+
+    bonusEl.oninput = () => {
+      const cur = loadData(key);
+      const v = Number(bonusEl.value || 0);
+      cur.bonus = Number.isFinite(v) && v >= 0 ? v : 0;
+      saveData(key, cur);
+      recalc(key);
+    };
+
+    const tbody = document.getElementById("tbody");
+    tbody.innerHTML = "";
+
+    const dmax = daysInMonth(year, monthIndex);
+    const mm = pad2(monthIndex + 1);
+
+    for (let d = 1; d <= dmax; d++){
+      const date = new Date(year, monthIndex, d);
+      const weekday = date.toLocaleDateString("en-GB", { weekday: "long" });
+      const dateText = `${pad2(d)}.${mm} (${weekday})`;
+
+      const tr = document.createElement("tr");
+
+      const tdDate = document.createElement("td");
+      tdDate.className = "datecol";
+      tdDate.textContent = dateText;
+      tr.appendChild(tdDate);
+
+      const tdEnd = document.createElement("td");
+      tdEnd.className = "endcol";
+      const endInput = document.createElement("input");
+      endInput.type = "time";
+      endInput.step = 60;
+
+      const entry = (data.days && data.days[d]) ? data.days[d] : {};
+      endInput.value = entry.endTime || "";
+      tdEnd.appendChild(endInput);
+      tr.appendChild(tdEnd);
+
+      const tdField = document.createElement("td");
+      tdField.className = "fieldcol";
+      const fieldCb = document.createElement("input");
+      fieldCb.type = "checkbox";
+      fieldCb.checked = entry.field === true;
+      tdField.appendChild(fieldCb);
+      tr.appendChild(tdField);
+
+      const tdNight = document.createElement("td");
+      tdNight.className = "nightcol";
+      tdNight.textContent = endInput.value ? toHHMM(nightMinutes(endInput.value)) : "—";
+      tr.appendChild(tdNight);
+
+      endInput.oninput = () => {
+        const cur = loadData(key);
+        if(!cur.days) cur.days = {};
+        if(!cur.days[d]) cur.days[d] = { field: false };
+
+        if(endInput.value){
+          cur.days[d].endTime = endInput.value;
+          cur.days[d].field = true;
+          fieldCb.checked = true;
+        } else {
+          delete cur.days[d].endTime;
+          cur.days[d].field = false;
+          fieldCb.checked = false;
+        }
+
+        const hasEnd = !!cur.days[d].endTime;
+        const hasField = cur.days[d].field === true;
+        if(!hasEnd && !hasField) delete cur.days[d];
+
+        saveData(key, cur);
+        tdNight.textContent = endInput.value ? toHHMM(nightMinutes(endInput.value)) : "—";
+        recalc(key);
+      };
+
+      fieldCb.onchange = () => {
+        const cur = loadData(key);
+        if(!cur.days) cur.days = {};
+        if(!cur.days[d]) cur.days[d] = {};
+        cur.days[d].field = fieldCb.checked;
+
+        const hasEnd = !!cur.days[d].endTime;
+        const hasField = cur.days[d].field === true;
+        if(!hasEnd && !hasField) delete cur.days[d];
+
+        saveData(key, cur);
+        recalc(key);
+      };
+
+      tbody.appendChild(tr);
+    }
+
+    recalc(key);
+
+    document.getElementById("clearMonth").onclick = () => {
+      localStorage.removeItem(key);
+      renderMonth();
+    };
+  }
+
+  // Pills accordion
+  document.querySelectorAll(".pillToggle").forEach(pill => {
+    pill.addEventListener("click", () => {
+      document.querySelectorAll(".pillToggle").forEach(p => { if (p !== pill) p.classList.remove("open"); });
+      pill.classList.toggle("open");
+    });
+  });
+
+  monthSelect.onchange = () => renderMonth();
+
+  // Year change
+  function applyYearChange(){
+    const y = Number(yearInput.value);
+    if(!Number.isFinite(y) || y < 2000 || y > 2100) return;
+    CURRENT_YEAR = y;
+    setYearPill();
+    renderMonth();
+  }
+  yearInput.addEventListener("change", applyYearChange);
+  yearInput.addEventListener("keydown", (e) => { if(e.key === "Enter") applyYearChange(); });
+
+  // ===== PIN (fixed default) =====
+  async function ensurePinInitialized(){
+    const stored = localStorage.getItem(PIN_HASH_KEY);
+    if(!stored){
+      localStorage.setItem(PIN_HASH_KEY, await sha256(DEFAULT_PIN));
+    }
+  }
+
+  function showPin(){
+    document.getElementById("pinOverlay").style.display = "flex";
+    document.getElementById("pinError").style.display = "none";
+    document.getElementById("pinInput").value = "";
+    setTimeout(() => document.getElementById("pinInput").focus(), 60);
+  }
+  function hidePin(){
+    document.getElementById("pinOverlay").style.display = "none";
+    document.body.classList.remove("locked");
+  }
+
+  async function unlockWithPin(){
+    const pin = (document.getElementById("pinInput").value || "").trim();
+    const err = document.getElementById("pinError");
+    const stored = localStorage.getItem(PIN_HASH_KEY);
+
+    if(pin.length < 4){
+      err.textContent = "PIN too short.";
+      err.style.display = "block";
+      return;
+    }
+
+    const hash = await sha256(pin);
+    if(hash === stored){
+      hidePin();
+      refreshMetaAndRates();
+      setYearPill();
+      renderMonth();
+    } else {
+      err.textContent = "Wrong PIN.";
+      err.style.display = "block";
+    }
+  }
+
+  document.getElementById("pinUnlock").addEventListener("click", unlockWithPin);
+  document.getElementById("pinInput").addEventListener("keydown", (e) => { if(e.key === "Enter") unlockWithPin(); });
+
+  // ===== ADMIN (1997) =====
+  let adminUnlocked = false;
+
+  function showAdmin(){
+    document.getElementById("adminOverlay").style.display = "flex";
+    document.getElementById("adminError").style.display = "none";
+    document.getElementById("adminCode").value = "";
+    document.getElementById("adminPanel").style.display = "none";
+    adminUnlocked = false;
+    setTimeout(() => document.getElementById("adminCode").focus(), 60);
+  }
+  function hideAdmin(){
+    document.getElementById("adminOverlay").style.display = "none";
+  }
+
+  document.getElementById("adminBtn").addEventListener("click", showAdmin);
+  document.getElementById("adminClose").addEventListener("click", hideAdmin);
+
+  document.getElementById("adminUnlock").addEventListener("click", () => {
+    const code = (document.getElementById("adminCode").value || "").trim();
+    const err = document.getElementById("adminError");
+    if(code !== ADMIN_CODE){
+      err.style.display = "block";
+      err.textContent = "Wrong code.";
+      return;
+    }
+    err.style.display = "none";
+    adminUnlocked = true;
+
+    document.getElementById("setName").value = SETTINGS.name;
+    document.getElementById("setCompany").value = SETTINGS.company;
+    document.getElementById("setNight").value = SETTINGS.nightRate;
+    document.getElementById("setField").value = SETTINGS.fieldRate;
+    document.getElementById("setFood").value = SETTINGS.foodRate;
+    document.getElementById("setPin").value = "";
+
+    document.getElementById("adminPanel").style.display = "block";
+  });
+
+  document.getElementById("adminSave").addEventListener("click", async () => {
+    if(!adminUnlocked) return;
+
+    const name = (document.getElementById("setName").value || "").trim() || DEFAULTS.name;
+    const company = (document.getElementById("setCompany").value || "").trim() || DEFAULTS.company;
+
+    const night = Number(document.getElementById("setNight").value);
+    const field = Number(document.getElementById("setField").value);
+    const food  = Number(document.getElementById("setFood").value);
+
+    SETTINGS = {
+      name,
+      company,
+      nightRate: Number.isFinite(night) && night >= 0 ? night : DEFAULTS.nightRate,
+      fieldRate: Number.isFinite(field) && field >= 0 ? field : DEFAULTS.fieldRate,
+      foodRate:  Number.isFinite(food) && food >= 0 ? food : DEFAULTS.foodRate,
+    };
+
+    saveSettings(SETTINGS);
+
+    const newPin = (document.getElementById("setPin").value || "").trim();
+    if(newPin){
+      if(newPin.length < 4){
+        alert("New PIN too short (min 4 digits).");
+        return;
+      }
+      localStorage.setItem(PIN_HASH_KEY, await sha256(newPin));
+    }
+
+    refreshMetaAndRates();
+    renderMonth();
+    hideAdmin();
+  });
+
+  document.getElementById("adminLock").addEventListener("click", () => {
+    adminUnlocked = false;
+    hideAdmin();
+  });
+
+  // ===== START =====
+  refreshMetaAndRates();
+  (async () => {
+    await ensurePinInitialized();
+    showPin();
+  })();
+</script>
+
+</body>
+</html>
