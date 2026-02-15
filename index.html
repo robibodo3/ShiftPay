@@ -961,9 +961,10 @@
 <!-- PWA service worker registration -->
 <script>
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("sw.js");
+    navigator.serviceWorker.register("./sw.js", { scope: "./" });
   }
 </script>
 
 </body>
 </html>
+
