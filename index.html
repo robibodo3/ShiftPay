@@ -3,9 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title><link rel="manifest" href="manifest.webmanifest">
+<title>ShiftPay</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0b1220">
-<link rel="apple-touch-icon" href="icon-192.png">Month Tracker</title>
+<link rel="apple-touch-icon" href="icon-192.png">
 
 <style>
   :root{
@@ -24,9 +27,9 @@
     --radius: 18px;
   }
 
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
+  *{ box-sizing: border-box; }
+  body{
+    margin:0;
     font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     background:
       radial-gradient(1200px 700px at 20% 10%, rgba(124,58,237,0.22), transparent 60%),
@@ -37,11 +40,11 @@
     padding: 14px;
   }
 
-  .wrap { max-width: 1020px; margin: 0 auto; }
+  .wrap{ max-width: 1020px; margin:0 auto; }
 
-  .header {
-    padding: 16px;
-    border: 1px solid var(--line);
+  .header{
+    padding:16px;
+    border:1px solid var(--line);
     border-radius: var(--radius);
     background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04));
     box-shadow: var(--shadow);
@@ -49,40 +52,42 @@
   }
 
   .topbar{
-    display:flex; gap:10px; justify-content: space-between; align-items: flex-start; flex-wrap: wrap;
+    display:flex; gap:10px;
+    justify-content: space-between;
+    align-items:flex-start;
+    flex-wrap: wrap;
   }
 
-  h1{
-    margin: 0;
-    font-size: 22px;
-    letter-spacing: -0.02em;
-  }
+  h1{ margin:0; font-size:22px; letter-spacing:-0.02em; }
 
   .meta{
-    margin-top: 6px;
+    margin-top:6px;
     color: var(--muted);
     font-size: 13px;
-    line-height: 1.35;
+    line-height:1.35;
   }
 
   .controls{
-    display:flex; gap:10px; align-items:center; flex-wrap: wrap;
+    display:flex; gap:10px;
+    align-items:center;
+    flex-wrap: wrap;
   }
 
   select, button, input[type="number"]{
-    padding: 10px 12px;
+    padding:10px 12px;
     border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.14);
+    border:1px solid rgba(255,255,255,0.14);
     background: rgba(255,255,255,0.06);
     color: var(--text);
     outline: none;
-    font-size: 14px;
+    font-size:14px;
   }
   select:focus, button:focus, input[type="number"]:focus{
     border-color: rgba(124,58,237,0.65);
     box-shadow: 0 0 0 3px rgba(124,58,237,0.20);
   }
-  button{ cursor: pointer; }
+
+  button{ cursor:pointer; }
   button.danger{
     border-color: rgba(239,68,68,0.35);
     background: rgba(239,68,68,0.10);
@@ -93,25 +98,25 @@
   }
 
   .adminCorner{
-    position: absolute;
-    top: 12px;
-    right: 12px;
+    position:absolute;
+    top:12px; right:12px;
     padding: 8px 10px;
-    font-size: 12px;
-    border-radius: 999px;
+    font-size:12px;
+    border-radius:999px;
   }
 
-  .pills { margin-top: 12px; display:flex; gap:10px; flex-wrap: wrap; }
+  .pills{ margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; }
   .pill{
     display:inline-flex; align-items:center; gap:8px;
-    padding: 8px 12px;
-    border-radius: 999px;
-    border: 1px solid var(--line);
+    padding:8px 12px;
+    border-radius:999px;
+    border:1px solid var(--line);
     background: rgba(255,255,255,0.06);
     color: var(--muted);
-    font-size: 12px;
+    font-size:12px;
   }
-  .dot{ width: 8px; height: 8px; border-radius: 99px; background: var(--purple); }
+
+  .dot{ width:8px; height:8px; border-radius:99px; background: var(--purple); }
   .dot.amber{ background: var(--amber); }
   .dot.blue{ background: var(--blue); }
   .dot.pink{ background: var(--pink); }
@@ -122,213 +127,172 @@
   .pillToggle.open .rateShown{ display:inline; }
   .pillToggle.open .rateHidden{ display:none; }
 
-  .note {
-    margin-top: 10px;
+  .note{
+    margin-top:10px;
     color: rgba(34,197,94,0.92);
-    font-size: 13px;
+    font-size:13px;
     display:none;
   }
 
   .tableCard{
-    margin-top: 12px;
-    border: 1px solid var(--line);
+    margin-top:12px;
+    border:1px solid var(--line);
     border-radius: var(--radius);
     background: rgba(255,255,255,0.04);
     box-shadow: var(--shadow);
-    overflow: hidden;
+    overflow:hidden;
   }
 
-  table { width:100%; border-collapse: collapse; }
+  table{ width:100%; border-collapse:collapse; }
   thead th{
     text-align:left;
-    font-size: 12px;
+    font-size:12px;
     color: var(--muted);
-    padding: 12px 12px;
-    border-bottom: 1px solid var(--line);
+    padding:12px 12px;
+    border-bottom:1px solid var(--line);
     background: rgba(255,255,255,0.05);
     position: sticky;
-    top: 0;
+    top:0;
     backdrop-filter: blur(6px);
   }
   tbody td{
-    padding: 10px 12px;
-    border-bottom: 1px solid rgba(255,255,255,0.07);
-    font-size: 14px;
-    vertical-align: middle;
+    padding:10px 12px;
+    border-bottom:1px solid rgba(255,255,255,0.07);
+    font-size:14px;
+    vertical-align:middle;
   }
   tbody tr:hover{ background: rgba(255,255,255,0.04); }
 
-  .datecol{ width: 260px; font-weight: 700; letter-spacing: 0.01em; }
-  .endcol{ width: 160px; }
-  .fieldcol{ width: 90px; }
-  .nightcol{ width: 160px; font-variant-numeric: tabular-nums; font-weight: 800; }
+  .datecol{ width:260px; font-weight:800; letter-spacing:0.01em; }
+  .endcol{ width:160px; }
+  .fieldcol{ width:90px; }
+  .nightcol{ width:160px; font-variant-numeric: tabular-nums; font-weight:900; }
 
   input[type="time"]{
-    width: 120px;
-    padding: 8px 10px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.16);
+    width:120px;
+    padding:8px 10px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.16);
     background: rgba(255,255,255,0.06);
     color: var(--text);
-    outline: none;
+    outline:none;
   }
 
   input[type="password"], input[type="text"]{
-    width: 100%;
-    padding: 10px 10px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.16);
+    width:100%;
+    padding:10px 10px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.16);
     background: rgba(255,255,255,0.06);
     color: var(--text);
-    outline: none;
-    font-size: 14px;
+    outline:none;
+    font-size:14px;
   }
 
   input[type="checkbox"]{
     transform: scale(1.25);
     accent-color: var(--purple);
-    cursor: pointer;
+    cursor:pointer;
   }
 
-  .grid{
-    display:grid;
-    gap: 12px;
-    grid-template-columns: 1fr;
-    margin-top: 12px;
-  }
+  .grid{ display:grid; gap:12px; grid-template-columns: 1fr; margin-top:12px; }
 
   .box{
-    border: 1px solid var(--line);
+    border:1px solid var(--line);
     border-radius: var(--radius);
     background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04));
     box-shadow: var(--shadow);
-    padding: 14px;
+    padding:14px;
   }
-
   .row{
-    display:flex;
-    gap: 14px;
+    display:flex; gap:14px;
     justify-content: space-between;
     flex-wrap: wrap;
-    align-items: flex-start;
+    align-items:flex-start;
   }
 
-  .kpi{ min-width: 220px; }
-  .kpiTitle{ color: var(--muted); font-size: 12px; display:flex; align-items:center; gap:8px; }
-  .kpiValue{ font-weight: 900; font-size: 26px; letter-spacing: -0.02em; }
-  .kpiValue.purple{ color: #c4b5fd; }
-  .kpiValue.amber{ color: #fcd34d; }
-  .kpiValue.blue{ color: #93c5fd; }
-  .kpiValue.pink{ color: #f9a8d4; }
+  .kpi{ min-width:220px; }
+  .kpiTitle{ color: var(--muted); font-size:12px; display:flex; align-items:center; gap:8px; }
+  .kpiValue{ font-weight:950; font-size:26px; letter-spacing:-0.02em; }
+  .kpiValue.purple{ color:#c4b5fd; }
+  .kpiValue.amber{ color:#fcd34d; }
+  .kpiValue.blue{ color:#93c5fd; }
+  .kpiValue.pink{ color:#f9a8d4; }
 
-  .mini{ margin-top: 6px; font-size: 12px; color: var(--muted); }
-  .money { white-space: nowrap; }
+  .mini{ margin-top:6px; font-size:12px; color: var(--muted); }
+  .money{ white-space:nowrap; }
 
   .totalBox{
-    border: 1px solid rgba(34,197,94,0.30);
+    border:1px solid rgba(34,197,94,0.30);
     background: linear-gradient(180deg, rgba(34,197,94,0.14), rgba(255,255,255,0.04));
   }
   .totalLabel{
-    font-size: 14px;
+    font-size:14px;
     color: rgba(255,255,255,0.75);
-    letter-spacing: 0.06em;
-    font-weight: 800;
+    letter-spacing:0.06em;
+    font-weight:900;
     text-transform: uppercase;
   }
   .totalBig{
-    font-size: 46px;
-    font-weight: 950;
+    font-size:46px;
+    font-weight: 1000;
     color: var(--green);
-    letter-spacing: -0.03em;
-    margin-top: 6px;
+    letter-spacing:-0.03em;
+    margin-top:6px;
   }
 
-  /* ===== OVERLAYS ===== */
+  /* overlays */
   .overlay{
     position: fixed;
-    inset: 0;
+    inset:0;
     background: rgba(0,0,0,0.58);
     backdrop-filter: blur(10px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-    z-index: 9999;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:16px;
+    z-index:9999;
   }
   .modal{
-    width: 100%;
-    max-width: 520px;
-    border: 1px solid rgba(255,255,255,0.14);
+    width:100%;
+    max-width:520px;
+    border:1px solid rgba(255,255,255,0.14);
     border-radius: 22px;
     background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.05));
     box-shadow: 0 18px 70px rgba(0,0,0,0.55);
-    padding: 16px;
-    overflow: hidden;
+    padding:16px;
+    overflow:hidden;
   }
-
-  .modalHeader{ display:flex; gap:14px; align-items: center; }
+  .modalHeader{ display:flex; gap:14px; align-items:center; }
   .meme{
-    width: 84px; height: 84px;
-    border-radius: 18px;
-    border: 1px solid rgba(255,255,255,0.14);
+    width:84px; height:84px;
+    border-radius:18px;
+    border:1px solid rgba(255,255,255,0.14);
     background: rgba(255,255,255,0.06);
     display:flex; align-items:center; justify-content:center;
-    overflow:hidden; flex: 0 0 auto;
+    overflow:hidden;
+    flex: 0 0 auto;
   }
   .modal h2{ margin:0; font-size:18px; letter-spacing:-0.02em; }
   .modal p{ margin:6px 0 0; color: var(--muted); font-size:13px; line-height:1.35; }
   .modalBody{ margin-top:14px; display:grid; gap:10px; }
-  .actions{ display:flex; gap:10px; flex-wrap: wrap; margin-top:10px; }
-  .actions button{ flex:1; min-width: 140px; }
+  .actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+  .actions button{ flex:1; min-width:140px; }
+  .error{ margin-top:8px; color: rgba(239,68,68,0.95); font-size:13px; display:none; }
 
-  .error{
-    margin-top: 8px;
-    color: rgba(239,68,68,0.95);
-    font-size: 13px;
-    display:none;
-  }
+  .adminOverlay{ justify-content:flex-end; align-items:flex-start; }
+  .adminModal{ margin-top:12px; margin-right:12px; max-width:480px; }
 
-  .adminOverlay{
-    justify-content: flex-end;
-    align-items: flex-start;
-  }
-  .adminModal{
-    margin-top: 12px;
-    margin-right: 12px;
-    max-width: 480px;
-  }
+  .formGrid{ display:grid; gap:10px; }
+  .field{ display:grid; gap:6px; }
+  .label{ font-size:12px; color: rgba(255,255,255,0.80); font-weight:800; letter-spacing:0.02em; }
+  .help{ font-size:12px; color: rgba(255,255,255,0.55); line-height:1.35; }
+  .rateRow{ display:grid; gap:10px; grid-template-columns: 1fr 1fr 1fr; }
+  @media (max-width:520px){ .rateRow{ grid-template-columns:1fr; } }
 
-  .formGrid{
-    display:grid;
-    gap: 10px;
-  }
-  .field{
-    display:grid;
-    gap: 6px;
-  }
-  .label{
-    font-size: 12px;
-    color: rgba(255,255,255,0.80);
-    font-weight: 700;
-    letter-spacing: 0.02em;
-  }
-  .help{
-    font-size: 12px;
-    color: rgba(255,255,255,0.55);
-    line-height: 1.35;
-  }
-  .rateRow{
-    display:grid;
-    gap: 10px;
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-  @media (max-width: 520px){
-    .rateRow{ grid-template-columns: 1fr; }
-  }
-
-  .locked #app {
+  .locked #app{
     filter: blur(7px);
-    pointer-events: none;
+    pointer-events:none;
     user-select:none;
   }
 </style>
@@ -341,7 +305,7 @@
   <div class="modal">
     <div class="modalHeader">
       <div class="meme" aria-hidden="true">
-        <!-- grumpy lock cat SVG -->
+        <!-- grumpy lock cat -->
         <svg viewBox="0 0 120 120" width="84" height="84">
           <defs>
             <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
@@ -358,7 +322,7 @@
           <path d="M54 74 Q60 78 66 74" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/>
           <rect x="48" y="78" width="24" height="22" rx="6" fill="rgba(255,255,255,0.22)" stroke="rgba(255,255,255,0.55)"/>
           <path d="M52 78 v-6 a8 8 0 0 1 16 0 v6" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="4" stroke-linecap="round"/>
-          <text x="60" y="28" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="12" font-family="system-ui" font-weight="700">NOPE</text>
+          <text x="60" y="28" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="12" font-family="system-ui" font-weight="800">NOPE</text>
         </svg>
       </div>
       <div>
@@ -377,7 +341,7 @@
   </div>
 </div>
 
-<!-- Admin Overlay (top-right) -->
+<!-- Admin Overlay -->
 <div class="overlay adminOverlay" id="adminOverlay" aria-modal="true" role="dialog">
   <div class="modal adminModal">
     <div class="modalHeader">
@@ -386,7 +350,7 @@
           <rect x="10" y="10" width="100" height="100" rx="22" fill="rgba(59,130,246,0.18)" stroke="rgba(255,255,255,0.18)"/>
           <path d="M60 30 l20 10 v18c0 18-12 34-20 38c-8-4-20-20-20-38V40z"
                 fill="rgba(255,255,255,0.22)" stroke="rgba(255,255,255,0.55)" stroke-width="3"/>
-          <text x="60" y="70" text-anchor="middle" fill="rgba(255,255,255,0.92)" font-size="18" font-family="system-ui" font-weight="900">1997</text>
+          <text x="60" y="70" text-anchor="middle" fill="rgba(255,255,255,0.92)" font-size="18" font-family="system-ui" font-weight="1000">1997</text>
         </svg>
       </div>
       <div>
@@ -410,13 +374,13 @@
           <div class="field">
             <div class="label">Name</div>
             <input id="setName" type="text" placeholder="e.g. Robert Bodo">
-            <div class="help">This is shown at the top of the app.</div>
+            <div class="help">Shown at the top of the app.</div>
           </div>
 
           <div class="field">
             <div class="label">Company</div>
             <input id="setCompany" type="text" placeholder="e.g. R - DVS">
-            <div class="help">Also shown at the top of the app.</div>
+            <div class="help">Shown at the top of the app.</div>
           </div>
 
           <div class="field">
@@ -424,15 +388,15 @@
             <div class="rateRow">
               <div class="field">
                 <input id="setNight" type="number" step="0.01" min="0" placeholder="Night rate">
-                <div class="help">£ per night hour (used for Night shifts total).</div>
+                <div class="help">£ per night hour.</div>
               </div>
               <div class="field">
                 <input id="setField" type="number" step="0.01" min="0" placeholder="Field/day">
-                <div class="help">£ per Field day (checked days × this).</div>
+                <div class="help">£ per field day.</div>
               </div>
               <div class="field">
-                <input id="setFood"  type="number" step="0.01" min="0" placeholder="Food/day">
-                <div class="help">£ per Food day (Food allowance days × this).</div>
+                <input id="setFood" type="number" step="0.01" min="0" placeholder="Food/day">
+                <div class="help">£ per food day.</div>
               </div>
             </div>
           </div>
@@ -440,12 +404,16 @@
           <div class="field">
             <div class="label">Change PIN</div>
             <input id="setPin" type="password" inputmode="numeric" pattern="[0-9]*" placeholder="New PIN (min 4 digits)">
-            <div class="help">Changes the lock PIN. (Only possible from Admin.)</div>
+            <div class="help">You can change PIN only here (Admin).</div>
           </div>
 
           <div class="actions">
             <button id="adminSave">Save</button>
             <button class="danger" id="adminLock">Lock</button>
+          </div>
+
+          <div class="help">
+            Note: This PIN protects inside the app. If someone can edit your files / browser storage, they can bypass it.
           </div>
         </div>
       </div>
@@ -515,17 +483,13 @@
         <div class="kpi">
           <div class="kpiTitle"><span class="dot blue"></span>Food allowance</div>
           <div class="kpiValue blue money" id="foodMoneyBig">0.00 £</div>
-          <div class="mini">
-            Days: <input id="foodDays" type="number" min="0" step="1" placeholder="0">
-          </div>
+          <div class="mini">Days: <input id="foodDays" type="number" min="0" step="1" placeholder="0"></div>
         </div>
 
         <div class="kpi">
           <div class="kpiTitle"><span class="dot pink"></span>Bonus</div>
           <div class="kpiValue pink money" id="bonusMoneyBig">0.00 £</div>
-          <div class="mini">
-            Amount: <input id="bonus" type="number" min="0" step="0.01" placeholder="0.00">
-          </div>
+          <div class="mini">Amount: <input id="bonus" type="number" min="0" step="0.01" placeholder="0.00"></div>
         </div>
       </div>
     </div>
@@ -543,11 +507,11 @@
   const PIN_HASH_KEY = "salary_pin_hash_fixed_v1";
   const ADMIN_CODE = "1997";
 
-  // ===== SETTINGS =====
+  // SETTINGS (global)
   const SETTINGS_KEY = "salary_settings_global_v1";
   const DEFAULTS = { name:"Robert Bodo", company:"R - DVS", nightRate:3.75, fieldRate:120, foodRate:35 };
 
-  // Night calculation anchor (kept as-is)
+  // night starts at 22:00
   const START_MIN = 22 * 60;
 
   // Year selection
@@ -555,6 +519,7 @@
   yearInput.value = String((new Date()).getFullYear());
   let CURRENT_YEAR = Number(yearInput.value);
 
+  // helpers
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, (c) => ({
       "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
@@ -567,9 +532,7 @@
     const m = minutes % 60;
     return `${h}:${pad2(m)}`;
   }
-  function daysInMonth(year, monthIndex){
-    return new Date(year, monthIndex + 1, 0).getDate();
-  }
+  function daysInMonth(year, monthIndex){ return new Date(year, monthIndex + 1, 0).getDate(); }
   function nightMinutes(endStr){
     if(!endStr) return 0;
     const [h,m] = endStr.split(":").map(Number);
@@ -594,15 +557,13 @@
         company: typeof s.company === "string" ? s.company : DEFAULTS.company,
         nightRate: Number.isFinite(Number(s.nightRate)) ? Number(s.nightRate) : DEFAULTS.nightRate,
         fieldRate: Number.isFinite(Number(s.fieldRate)) ? Number(s.fieldRate) : DEFAULTS.fieldRate,
-        foodRate: Number.isFinite(Number(s.foodRate)) ? Number(s.foodRate) : DEFAULTS.foodRate,
+        foodRate: Number.isFinite(Number(s.foodRate)) ? Number(s.foodRate) : DEFAULTS.foodRate
       };
-    } catch(e){
+    }catch(e){
       return { ...DEFAULTS };
     }
   }
-  function saveSettings(s){
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
-  }
+  function saveSettings(s){ localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); }
   let SETTINGS = loadSettings();
 
   function refreshMetaAndRates(){
@@ -613,7 +574,7 @@
     document.getElementById("pillFood").textContent  = `£${SETTINGS.foodRate}`;
   }
 
-  // ===== MONTHS =====
+  // months
   const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   const monthSelect = document.getElementById("monthSelect");
   MONTHS.forEach((name, idx) => {
@@ -624,36 +585,28 @@
   });
   monthSelect.value = String((new Date()).getMonth());
 
-  function setYearPill(){
-    document.getElementById("yearPill").textContent = `Year: ${CURRENT_YEAR}`;
-  }
+  function setYearPill(){ document.getElementById("yearPill").textContent = `Year: ${CURRENT_YEAR}`; }
 
-  // ===== STORAGE =====
+  // storage keys
   function legacyFebKey(year){ return `night_hours_feb_${year}`; }
   function monthKey(year, monthIndex){
-    if (monthIndex === 1) return legacyFebKey(year);
+    if(monthIndex === 1) return legacyFebKey(year);
     return `salary_${year}_${monthIndex}`;
   }
+
   function loadRaw(key){
-    try {
-      const raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw) : null;
-    } catch(e){
-      return null;
-    }
+    try{ const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : null; }
+    catch(e){ return null; }
   }
-  function saveRaw(key, obj){
-    localStorage.setItem(key, JSON.stringify(obj));
-  }
-  function isNewFormat(obj){
-    return obj && typeof obj === "object" && obj.days && typeof obj.days === "object";
-  }
+  function saveRaw(key, obj){ localStorage.setItem(key, JSON.stringify(obj)); }
+  function isNewFormat(obj){ return obj && typeof obj === "object" && obj.days && typeof obj.days === "object"; }
+
   function migrateIfNeededForKey(key, year, monthIndex){
     const note = document.getElementById("migrateNote");
     note.style.display = "none";
     note.textContent = "";
 
-    if (monthIndex !== 1) return;
+    if(monthIndex !== 1) return;
 
     const raw = loadRaw(key);
     if(!raw) return;
@@ -676,44 +629,37 @@
       note.textContent = `Imported ${migratedCount} saved days ✅ (${MONTHS[monthIndex]} ${year})`;
     }
   }
+
   function loadData(key){
     const raw = loadRaw(key);
     if(!raw) return { days: {}, foodDays: 0, bonus: 0 };
 
     if(isNewFormat(raw)){
-      return {
-        days: raw.days || {},
-        foodDays: Number(raw.foodDays || 0),
-        bonus: Number(raw.bonus || 0),
-      };
+      return { days: raw.days || {}, foodDays: Number(raw.foodDays || 0), bonus: Number(raw.bonus || 0) };
     }
 
     const days = {};
-    for (const k of Object.keys(raw)) {
+    for(const k of Object.keys(raw)){
       const v = raw[k];
-      if (typeof v === "string" && v.includes(":")) days[k] = { endTime: v, field: false };
+      if(typeof v === "string" && v.includes(":")) days[k] = { endTime: v, field: false };
     }
     return { days, foodDays: 0, bonus: 0 };
   }
+
   function saveData(key, data){
-    saveRaw(key, {
-      days: data.days || {},
-      foodDays: Number(data.foodDays || 0),
-      bonus: Number(data.bonus || 0),
-    });
+    saveRaw(key, { days: data.days || {}, foodDays: Number(data.foodDays || 0), bonus: Number(data.bonus || 0) });
   }
 
-  // ===== CALC =====
   function recalc(key){
     const data = loadData(key);
 
     let totalNightMin = 0;
     let fieldDays = 0;
 
-    for (const dStr of Object.keys(data.days)) {
+    for(const dStr of Object.keys(data.days)){
       const entry = data.days[dStr] || {};
-      if (entry.endTime) totalNightMin += nightMinutes(entry.endTime);
-      if (entry.field === true) fieldDays += 1;
+      if(entry.endTime) totalNightMin += nightMinutes(entry.endTime);
+      if(entry.field === true) fieldDays += 1;
     }
 
     const nightPay = (totalNightMin / 60) * SETTINGS.nightRate;
@@ -737,14 +683,12 @@
     document.getElementById("grandTotal").textContent = money(grand);
   }
 
-  // ===== RENDER MONTH =====
   function renderMonth(){
     const monthIndex = Number(monthSelect.value);
     const year = CURRENT_YEAR;
     const key = monthKey(year, monthIndex);
 
     document.getElementById("title").textContent = `${MONTHS[monthIndex]}`;
-
     migrateIfNeededForKey(key, year, monthIndex);
 
     const data = loadData(key);
@@ -752,8 +696,8 @@
     const foodDaysEl = document.getElementById("foodDays");
     const bonusEl = document.getElementById("bonus");
 
-    foodDaysEl.value = (data.foodDays || data.foodDays === 0) ? String(data.foodDays) : "";
-    bonusEl.value = (data.bonus || data.bonus === 0) ? String(data.bonus) : "";
+    foodDaysEl.value = String(data.foodDays ?? 0);
+    bonusEl.value = String(data.bonus ?? 0);
 
     foodDaysEl.oninput = () => {
       const cur = loadData(key);
@@ -777,7 +721,7 @@
     const dmax = daysInMonth(year, monthIndex);
     const mm = pad2(monthIndex + 1);
 
-    for (let d = 1; d <= dmax; d++){
+    for(let d=1; d<=dmax; d++){
       const date = new Date(year, monthIndex, d);
       const weekday = date.toLocaleDateString("en-GB", { weekday: "long" });
       const dateText = `${pad2(d)}.${mm} (${weekday})`;
@@ -794,7 +738,6 @@
       const endInput = document.createElement("input");
       endInput.type = "time";
       endInput.step = 60;
-
       const entry = (data.days && data.days[d]) ? data.days[d] : {};
       endInput.value = entry.endTime || "";
       tdEnd.appendChild(endInput);
@@ -813,6 +756,7 @@
       tdNight.textContent = endInput.value ? toHHMM(nightMinutes(endInput.value)) : "—";
       tr.appendChild(tdNight);
 
+      // auto field when end time exists
       endInput.oninput = () => {
         const cur = loadData(key);
         if(!cur.days) cur.days = {};
@@ -822,7 +766,7 @@
           cur.days[d].endTime = endInput.value;
           cur.days[d].field = true;
           fieldCb.checked = true;
-        } else {
+        }else{
           delete cur.days[d].endTime;
           cur.days[d].field = false;
           fieldCb.checked = false;
@@ -862,17 +806,17 @@
     };
   }
 
-  // Pills accordion
+  // pills reveal
   document.querySelectorAll(".pillToggle").forEach(pill => {
     pill.addEventListener("click", () => {
-      document.querySelectorAll(".pillToggle").forEach(p => { if (p !== pill) p.classList.remove("open"); });
+      document.querySelectorAll(".pillToggle").forEach(p => { if(p !== pill) p.classList.remove("open"); });
       pill.classList.toggle("open");
     });
   });
 
   monthSelect.onchange = () => renderMonth();
 
-  // Year change
+  // year change
   function applyYearChange(){
     const y = Number(yearInput.value);
     if(!Number.isFinite(y) || y < 2000 || y > 2100) return;
@@ -883,7 +827,7 @@
   yearInput.addEventListener("change", applyYearChange);
   yearInput.addEventListener("keydown", (e) => { if(e.key === "Enter") applyYearChange(); });
 
-  // ===== PIN (fixed default) =====
+  // pin init
   async function ensurePinInitialized(){
     const stored = localStorage.getItem(PIN_HASH_KEY);
     if(!stored){
@@ -928,7 +872,7 @@
   document.getElementById("pinUnlock").addEventListener("click", unlockWithPin);
   document.getElementById("pinInput").addEventListener("keydown", (e) => { if(e.key === "Enter") unlockWithPin(); });
 
-  // ===== ADMIN (1997) =====
+  // admin
   let adminUnlocked = false;
 
   function showAdmin(){
@@ -939,9 +883,7 @@
     adminUnlocked = false;
     setTimeout(() => document.getElementById("adminCode").focus(), 60);
   }
-  function hideAdmin(){
-    document.getElementById("adminOverlay").style.display = "none";
-  }
+  function hideAdmin(){ document.getElementById("adminOverlay").style.display = "none"; }
 
   document.getElementById("adminBtn").addEventListener("click", showAdmin);
   document.getElementById("adminClose").addEventListener("click", hideAdmin);
@@ -949,11 +891,13 @@
   document.getElementById("adminUnlock").addEventListener("click", () => {
     const code = (document.getElementById("adminCode").value || "").trim();
     const err = document.getElementById("adminError");
+
     if(code !== ADMIN_CODE){
       err.style.display = "block";
       err.textContent = "Wrong code.";
       return;
     }
+
     err.style.display = "none";
     adminUnlocked = true;
 
@@ -982,7 +926,7 @@
       company,
       nightRate: Number.isFinite(night) && night >= 0 ? night : DEFAULTS.nightRate,
       fieldRate: Number.isFinite(field) && field >= 0 ? field : DEFAULTS.fieldRate,
-      foodRate:  Number.isFinite(food) && food >= 0 ? food : DEFAULTS.foodRate,
+      foodRate:  Number.isFinite(food) && food >= 0 ? food : DEFAULTS.foodRate
     };
 
     saveSettings(SETTINGS);
@@ -1006,7 +950,7 @@
     hideAdmin();
   });
 
-  // ===== START =====
+  // start
   refreshMetaAndRates();
   (async () => {
     await ensurePinInitialized();
@@ -1014,10 +958,12 @@
   })();
 </script>
 
+<!-- PWA service worker registration -->
 <script>
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js");
   }
-</script></body>
-</html>
+</script>
 
+</body>
+</html>
