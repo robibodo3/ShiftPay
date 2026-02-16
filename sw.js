@@ -1,4 +1,5 @@
 const CACHE = "shiftpay-cache-auto-v1";
+
 const ASSETS = [
   "./",
   "./index.html",
@@ -8,7 +9,9 @@ const ASSETS = [
 ];
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)));
+  event.waitUntil(
+    caches.open(CACHE).then((cache) => cache.addAll(ASSETS))
+  );
   self.skipWaiting();
 });
 
@@ -21,18 +24,23 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
+// HTML: network-first (pull latest when online)
+// Other assets: cache-first
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   const url = new URL(req.url);
-  if (url.origin !== location.origin) return;
 
-  // HTML: always try network first => pulls latest
-  if (req.headers.get("accept")?.includes("text/html")) {
+  // Only handle same-origin requests
+  if (url.origin !== self.location.origin) return;
+
+  const accept = req.headers.get("accept") || "";
+
+  if (accept.includes("text/html")) {
     event.respondWith(
       fetch(req)
         .then((res) => {
           const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put(req, copy));
+          caches.open(CACHE).then((cache) => cache.put(req, copy));
           return res;
         })
         .catch(() => caches.match(req).then((r) => r || caches.match("./index.html")))
@@ -40,20 +48,22 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // others: cache first
   event.respondWith(
     caches.match(req).then((cached) => {
       if (cached) return cached;
+
       return fetch(req).then((res) => {
         const copy = res.clone();
-        caches.open(CACHE).then((c) => c.put(req, copy));
+        caches.open(CACHE).then((cache) => cache.put(req, copy));
         return res;
       });
     })
   );
 });
 
-// allow page to force-activate new SW
+// Allow page to activate new SW immediately
 self.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "SKIP_WAITING") self.skipWaiting();
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
