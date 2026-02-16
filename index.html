@@ -40,7 +40,6 @@
     padding:14px;
   }
 
-  /* When an overlay is open, don't scroll the background */
   body.modal-open{
     overflow:hidden;
     touch-action:none;
@@ -174,55 +173,20 @@
   .fieldcol{ width:90px; }
   .nightcol{ width:160px; font-variant-numeric:tabular-nums; font-weight:900; }
 
-  /* Date formatting: always 2 lines + colored weekday + weekend red + today highlight */
-  .date-wrap{
-    display:flex;
-    flex-direction:column;
-    gap:3px;
-    line-height:1.05;
-  }
-  .date-top{
-    display:flex;
-    align-items:center;
-    gap:8px;
-  }
-  .date-number{
-    font-weight:950;
-    font-size:15px;
-    letter-spacing:0.02em;
-  }
-  .date-weekday{
-    font-size:12px;
-    font-weight:800;
-    letter-spacing:0.01em;
-    color:#93c5fd;        /* weekday blue-ish */
-    opacity:0.9;
-  }
-  .is-weekend .date-weekday{
-    color:#ff4d4d;        /* weekend red */
-    opacity:0.95;
-  }
-  .is-today{
-    background:rgba(34,197,94,0.14);
-    box-shadow:0 0 10px rgba(34,197,94,0.40);
-    border-radius:12px;
-  }
+  .date-wrap{ display:flex; flex-direction:column; gap:3px; line-height:1.05; }
+  .date-top{ display:flex; align-items:center; gap:8px; }
+  .date-number{ font-weight:950; font-size:15px; letter-spacing:0.02em; }
+  .date-weekday{ font-size:12px; font-weight:800; letter-spacing:0.01em; color:#93c5fd; opacity:0.92; }
+  .is-weekend .date-weekday{ color:#ff4d4d; opacity:0.96; }
+  .is-today{ background:rgba(34,197,94,0.14); box-shadow:0 0 10px rgba(34,197,94,0.35); }
   .today-bolt{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    width:18px;
-    height:18px;
-    border-radius:999px;
+    display:inline-flex; align-items:center; justify-content:center;
+    width:18px; height:18px; border-radius:999px;
     background:rgba(34,197,94,0.22);
     border:1px solid rgba(34,197,94,0.45);
-    box-shadow:0 0 10px rgba(34,197,94,0.35);
+    box-shadow:0 0 10px rgba(34,197,94,0.30);
   }
-  .today-bolt svg{
-    width:12px;
-    height:12px;
-    fill:rgba(34,197,94,0.95);
-  }
+  .today-bolt svg{ width:12px; height:12px; fill:rgba(34,197,94,0.95); }
 
   input[type="time"]{
     width:120px;
@@ -297,7 +261,6 @@
     margin-top:6px;
   }
 
-  /* overlays */
   .overlay{
     position:fixed;
     inset:0;
@@ -350,13 +313,8 @@
   .rateRow{ display:grid; gap:10px; grid-template-columns:1fr 1fr 1fr; }
   @media (max-width:520px){ .rateRow{ grid-template-columns:1fr; } }
 
-  .locked #app{
-    filter: blur(7px);
-    pointer-events:none;
-    user-select:none;
-  }
+  .locked #app{ filter: blur(7px); pointer-events:none; user-select:none; }
 
-  /* Backup buttons */
   .admin-btn{
     padding:10px 16px;
     border:none;
@@ -369,35 +327,37 @@
   .admin-btn:hover{ opacity:0.88; }
   .green-btn{ background:#22c55e; }
   .blue-btn{ background:#3b82f6; }
+
+  .admin-glow{
+    box-shadow:
+      0 0 12px rgba(59,130,246,0.6),
+      0 0 30px rgba(59,130,246,0.35),
+      0 0 60px rgba(59,130,246,0.2);
+    transition: box-shadow 0.3s ease;
+  }
 </style>
 </head>
 
 <body class="locked">
 
-<!-- PIN Overlay -->
 <div class="overlay" id="pinOverlay" aria-modal="true" role="dialog">
   <div class="modal">
     <div class="modalHeader">
       <div class="meme" aria-hidden="true">
-        <!-- Electrician doing X (minimal icon) -->
         <svg viewBox="0 0 120 120" width="84" height="84">
           <defs>
             <linearGradient id="eg4x" x1="0" x2="1" y1="0" y2="1">
               <stop offset="0" stop-color="#7c3aed" stop-opacity="0.75"/>
-              <stop offset="1" stop-color="#3b82f6" stop-opacity="0.7"/>
+              <stop offset="1" stop-color="#3b82f6" stop-opacity="0.70"/>
             </linearGradient>
           </defs>
           <rect x="6" y="6" width="108" height="108" rx="22" fill="url(#eg4x)" opacity="0.22"/>
           <rect x="14" y="14" width="92" height="92" rx="18" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.18)"/>
-          <!-- Helmet/head -->
           <circle cx="60" cy="44" r="12" fill="rgba(255,255,255,0.20)" stroke="rgba(255,255,255,0.60)" stroke-width="3"/>
           <path d="M48 44 Q60 32 72 44" fill="rgba(255,255,255,0.22)" stroke="rgba(255,255,255,0.60)" stroke-width="3" stroke-linecap="round"/>
-          <!-- Body -->
           <path d="M42 90 Q60 70 78 90" fill="rgba(255,255,255,0.16)" stroke="rgba(255,255,255,0.55)" stroke-width="3" stroke-linecap="round"/>
-          <!-- Arms crossed (X) -->
           <path d="M36 64 L84 86" stroke="rgba(255,255,255,0.92)" stroke-width="6" stroke-linecap="round"/>
           <path d="M84 64 L36 86" stroke="rgba(255,255,255,0.92)" stroke-width="6" stroke-linecap="round"/>
-          <!-- Small lightning -->
           <path d="M70 20 L55 50 H66 L53 86 L79 52 H67 Z" fill="rgba(255,255,255,0.88)" opacity="0.9"/>
         </svg>
       </div>
@@ -417,16 +377,20 @@
   </div>
 </div>
 
-<!-- Admin Overlay -->
 <div class="overlay adminOverlay" id="adminOverlay" aria-modal="true" role="dialog">
   <div class="modal adminModal">
     <div class="modalHeader">
-      <div class="meme" aria-hidden="true">
+      <div class="meme" id="adminIcon" aria-hidden="true">
         <svg viewBox="0 0 120 120" width="84" height="84">
-          <rect x="10" y="10" width="100" height="100" rx="22" fill="rgba(59,130,246,0.18)" stroke="rgba(255,255,255,0.18)"/>
-          <path d="M60 30 l20 10 v18c0 18-12 34-20 38c-8-4-20-20-20-38V40z"
-                fill="rgba(255,255,255,0.22)" stroke="rgba(255,255,255,0.55)" stroke-width="3"/>
-          <text x="60" y="70" text-anchor="middle" fill="rgba(255,255,255,0.92)" font-size="18" font-family="system-ui" font-weight="1000">1997</text>
+          <rect x="10" y="10" width="100" height="100" rx="22"
+                fill="rgba(59,130,246,0.18)"
+                stroke="rgba(255,255,255,0.18)"/>
+          <path d="M60 28 l22 10 v20c0 22-14 38-22 42c-8-4-22-20-22-42V38z"
+                fill="rgba(255,255,255,0.22)"
+                stroke="rgba(255,255,255,0.60)"
+                stroke-width="3"/>
+          <path d="M65 40 L50 64 H60 L48 92 L76 60 H66 Z"
+                fill="rgba(255,255,255,0.9)"/>
         </svg>
       </div>
       <div>
@@ -828,10 +792,10 @@
     for(let d=1; d<=dmax; d++){
       const date = new Date(year, monthIndex, d);
       const weekday = date.toLocaleDateString("en-GB", { weekday: "long" });
-      const dow = date.getDay(); // 0 Sun, 6 Sat
+      const dow = date.getDay();
 
       const tr = document.createElement("tr");
-
+      if(dow === 0 || dow === 6) tr.classList.add("is-weekend");
       if(isSameYMD(date, today)) tr.classList.add("is-today");
 
       const tdDate = document.createElement("td");
@@ -846,7 +810,6 @@
       const dn = document.createElement("div");
       dn.className = "date-number";
       dn.textContent = `${pad2(d)}.${mm}`;
-
       top.appendChild(dn);
 
       if(isSameYMD(date, today)){
@@ -859,10 +822,6 @@
       const dw = document.createElement("div");
       dw.className = "date-weekday";
       dw.textContent = weekday;
-
-      if(dow === 0 || dow === 6){
-        tr.classList.add("is-weekend");
-      }
 
       wrap.appendChild(top);
       wrap.appendChild(dw);
@@ -1049,13 +1008,21 @@
 
   function showAdmin(){
     openOverlay("adminOverlay");
+    const icon = document.getElementById("adminIcon");
+    if(icon) icon.classList.add("admin-glow");
+
     document.getElementById("adminError").style.display = "none";
     document.getElementById("adminCode").value = "";
     document.getElementById("adminPanel").style.display = "none";
     adminUnlocked = false;
+
     setTimeout(() => document.getElementById("adminCode").focus(), 60);
   }
-  function hideAdmin(){ closeOverlay("adminOverlay"); }
+  function hideAdmin(){
+    const icon = document.getElementById("adminIcon");
+    if(icon) icon.classList.remove("admin-glow");
+    closeOverlay("adminOverlay");
+  }
 
   document.getElementById("adminBtn").addEventListener("click", showAdmin);
   document.getElementById("adminClose").addEventListener("click", hideAdmin);
@@ -1164,7 +1131,6 @@
     importDataFromFile(file);
   });
 
-  // Auto-lock when app loses focus
   let lockTimer = null;
   function lockNow(){
     if (document.body.classList.contains("locked")) return;
@@ -1192,7 +1158,6 @@
   })();
 </script>
 
-<!-- AUTO UPDATE service worker (auto refresh when update is available) -->
 <script>
 (function () {
   if (!("serviceWorker" in navigator)) return;
