@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ShiftPay</title>
 
+<!-- PWA -->
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0b1220">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -39,7 +40,7 @@
     padding:14px;
   }
 
-  /* FIX: când e deschis overlay, nu mai scroll-ează fundalul */
+  /* When an overlay is open, don't scroll the background */
   body.modal-open{
     overflow:hidden;
     touch-action:none;
@@ -257,8 +258,6 @@
     justify-content:center;
     padding:16px;
     z-index:9999;
-
-    /* FIX: overlay poate scroll-a singur dacă e nevoie */
     overflow:auto;
     -webkit-overflow-scrolling:touch;
   }
@@ -270,8 +269,6 @@
     background:linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.05));
     box-shadow:0 18px 70px rgba(0,0,0,0.55);
     padding:16px;
-
-    /* FIX: modal scroll intern */
     max-height:90vh;
     overflow:auto;
     -webkit-overflow-scrolling:touch;
@@ -332,23 +329,28 @@
   <div class="modal">
     <div class="modalHeader">
       <div class="meme" aria-hidden="true">
+        <!-- Electrician getting zapped (minimal) -->
         <svg viewBox="0 0 120 120" width="84" height="84">
           <defs>
-            <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
-              <stop offset="0" stop-color="#7c3aed" stop-opacity="0.9"/>
+            <linearGradient id="eg4" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0" stop-color="#3b82f6" stop-opacity="0.9"/>
               <stop offset="1" stop-color="#22c55e" stop-opacity="0.85"/>
             </linearGradient>
           </defs>
-          <rect x="6" y="6" width="108" height="108" rx="22" fill="url(#g)" opacity="0.25"/>
-          <path d="M40 50 L30 35 L45 42" fill="#fff" opacity="0.9"/>
-          <path d="M80 50 L90 35 L75 42" fill="#fff" opacity="0.9"/>
-          <circle cx="60" cy="66" r="26" fill="rgba(255,255,255,0.22)"/>
-          <circle cx="50" cy="64" r="4" fill="#fff"/>
-          <circle cx="70" cy="64" r="4" fill="#fff"/>
-          <path d="M54 74 Q60 78 66 74" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/>
-          <rect x="48" y="78" width="24" height="22" rx="6" fill="rgba(255,255,255,0.22)" stroke="rgba(255,255,255,0.55)"/>
-          <path d="M52 78 v-6 a8 8 0 0 1 16 0 v6" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="4" stroke-linecap="round"/>
-          <text x="60" y="28" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="12" font-family="system-ui" font-weight="800">NOPE</text>
+          <rect x="6" y="6" width="108" height="108" rx="22" fill="url(#eg4)" opacity="0.22"/>
+          <rect x="14" y="14" width="92" height="92" rx="18" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.18)"/>
+          <path d="M70 18 L50 56 H64 L48 100 L74 58 H60 Z" fill="rgba(255,255,255,0.95)" opacity="0.9"/>
+          <circle cx="44" cy="52" r="13" fill="rgba(255,255,255,0.20)" stroke="rgba(255,255,255,0.55)" stroke-width="3"/>
+          <path d="M31 52 Q44 38 57 52" fill="rgba(255,255,255,0.22)" stroke="rgba(255,255,255,0.55)" stroke-width="3" stroke-linecap="round"/>
+          <path d="M36 44 H52" stroke="rgba(255,255,255,0.55)" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="39" cy="52" r="2.5" fill="#fff"/>
+          <circle cx="49" cy="52" r="2.5" fill="#fff"/>
+          <path d="M41 59 Q44 63 47 59" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M30 88 Q44 74 58 88" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.55)" stroke-width="3" stroke-linecap="round"/>
+          <path d="M32 74 L20 64" stroke="rgba(255,255,255,0.65)" stroke-width="3" stroke-linecap="round"/>
+          <path d="M56 74 L68 64" stroke="rgba(255,255,255,0.65)" stroke-width="3" stroke-linecap="round"/>
+          <path d="M22 50 L18 46 M24 46 L20 42 M28 44 L24 40" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linecap="round"/>
+          <path d="M62 46 L66 42 M58 44 L62 40" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linecap="round"/>
         </svg>
       </div>
       <div>
@@ -363,7 +365,6 @@
         <button id="pinUnlock" type="button">Unlock</button>
       </div>
       <div class="error" id="pinError">Wrong PIN.</div>
-
     </div>
   </div>
 </div>
@@ -441,6 +442,11 @@
 
           <hr style="margin:20px 0; opacity:0.2;">
 
+          <div>
+            <div class="label" style="font-size:14px;">Backup & Restore</div>
+            <div class="help" style="margin-top:6px;">
+              Before Clear data / reset: Export. After: Import.
+            </div>
 
             <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
               <button id="btnExport" class="admin-btn green-btn" type="button">Export Backup</button>
@@ -449,7 +455,7 @@
             </div>
 
             <div class="help" style="margin-top:10px;">
-              Fișier: <b>shiftpay-backup.json</b>
+              File: <b>shiftpay-backup.json</b>
             </div>
           </div>
 
@@ -466,6 +472,7 @@
     <div class="topbar">
       <div>
         <h1 id="title">Month</h1>
+        <div class="meta" id="todayLine"></div>
         <div class="meta" id="metaLine">
           <b>Name:</b> Robert Bodo &nbsp;&nbsp; <b>Company:</b> R - DVS
         </div>
@@ -540,24 +547,19 @@
 </div>
 
 <script>
-  // ===== PIN + ADMIN CODE =====
   const DEFAULT_PIN = "9705213";
   const PIN_HASH_KEY = "salary_pin_hash_fixed_v1";
   const ADMIN_CODE = "1997";
 
-  // SETTINGS (global)
   const SETTINGS_KEY = "salary_settings_global_v1";
   const DEFAULTS = { name:"Robert Bodo", company:"R - DVS", nightRate:3.75, fieldRate:120, foodRate:35 };
 
-  // night starts at 22:00
   const START_MIN = 22 * 60;
 
-  // Year selection
   const yearInput = document.getElementById("yearInput");
   yearInput.value = String((new Date()).getFullYear());
   let CURRENT_YEAR = Number(yearInput.value);
 
-  // helpers
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, (c) => ({
       "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
@@ -573,10 +575,20 @@
   function daysInMonth(year, monthIndex){ return new Date(year, monthIndex + 1, 0).getDate(); }
   function nightMinutes(endStr){
     if(!endStr) return 0;
-    const [h,m] = endStr.split(":").map(Number);
+    const parts = endStr.split(":").map(Number);
+    const h = parts[0] ?? 0, m = parts[1] ?? 0;
     let endMin = h * 60 + m;
     if(endMin < START_MIN) endMin += 24 * 60;
     return Math.max(0, endMin - START_MIN);
+  }
+
+  function setTodayLine(){
+    const el = document.getElementById("todayLine");
+    if(!el) return;
+    const now = new Date();
+    const date = now.toLocaleDateString("en-GB", { day:"2-digit", month:"2-digit", year:"numeric" });
+    const weekday = now.toLocaleDateString("en-GB", { weekday:"long" });
+    el.textContent = `${date} (${weekday})`;
   }
 
   async function sha256(text){
@@ -612,7 +624,6 @@
     document.getElementById("pillFood").textContent  = `£${SETTINGS.foodRate}`;
   }
 
-  // months
   const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   const monthSelect = document.getElementById("monthSelect");
   MONTHS.forEach((name, idx) => {
@@ -625,7 +636,6 @@
 
   function setYearPill(){ document.getElementById("yearPill").textContent = `Year: ${CURRENT_YEAR}`; }
 
-  // storage keys
   function legacyFebKey(year){ return `night_hours_feb_${year}`; }
   function monthKey(year, monthIndex){
     if(monthIndex === 1) return legacyFebKey(year);
@@ -794,7 +804,6 @@
       tdNight.textContent = endInput.value ? toHHMM(nightMinutes(endInput.value)) : "—";
       tr.appendChild(tdNight);
 
-      // auto field when end time exists
       endInput.oninput = () => {
         const cur = loadData(key);
         if(!cur.days) cur.days = {};
@@ -844,7 +853,6 @@
     };
   }
 
-  // pills reveal
   document.querySelectorAll(".pillToggle").forEach(pill => {
     pill.addEventListener("click", () => {
       document.querySelectorAll(".pillToggle").forEach(p => { if(p !== pill) p.classList.remove("open"); });
@@ -854,7 +862,6 @@
 
   monthSelect.onchange = () => renderMonth();
 
-  // year change
   function applyYearChange(){
     const y = Number(yearInput.value);
     if(!Number.isFinite(y) || y < 2000 || y > 2100) return;
@@ -865,20 +872,17 @@
   yearInput.addEventListener("change", applyYearChange);
   yearInput.addEventListener("keydown", (e) => { if(e.key === "Enter") applyYearChange(); });
 
-  // ===== Overlay helpers (fix scroll) =====
   function openOverlay(id){
     document.getElementById(id).style.display = "flex";
     document.body.classList.add("modal-open");
   }
   function closeOverlay(id){
     document.getElementById(id).style.display = "none";
-    // dacă ambele sunt închise, scoatem modal-open
     const pinOpen = document.getElementById("pinOverlay").style.display === "flex";
     const adminOpen = document.getElementById("adminOverlay").style.display === "flex";
     if(!pinOpen && !adminOpen) document.body.classList.remove("modal-open");
   }
 
-  // ===== PIN =====
   async function ensurePinInitialized(){
     const stored = localStorage.getItem(PIN_HASH_KEY);
     if(!stored){
@@ -887,27 +891,6 @@
   }
 
   function showPin(){
-    // auto-lock when app loses focus
-let lockTimer = null;
-
-function lockNow(){
-  if (document.body.classList.contains("locked")) return;
-  try { document.getElementById("adminOverlay").style.display = "none"; } catch(e){}
-  document.body.classList.add("locked");
-  showPin();
-}
-
-function scheduleLock(){
-  clearTimeout(lockTimer);
-  lockTimer = setTimeout(lockNow, 0);
-}
-
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "hidden") scheduleLock();
-});
-
-window.addEventListener("pagehide", scheduleLock);
-window.addEventListener("blur", scheduleLock);
     openOverlay("pinOverlay");
     document.getElementById("pinError").style.display = "none";
     document.getElementById("pinInput").value = "";
@@ -919,8 +902,7 @@ window.addEventListener("blur", scheduleLock);
     document.body.classList.remove("locked");
   }
 
-  let pinTryToken = 0; // ca să evităm multiple checks
-
+  let pinTryToken = 0;
   async function tryUnlockAuto(){
     const input = document.getElementById("pinInput");
     const pin = (input.value || "").trim();
@@ -934,16 +916,15 @@ window.addEventListener("blur", scheduleLock);
 
     const myToken = ++pinTryToken;
     const hash = await sha256(pin);
-    if(myToken !== pinTryToken) return; // a tastat între timp
+    if(myToken !== pinTryToken) return;
 
     if(hash === stored){
       err.style.display = "none";
       hidePin();
       refreshMetaAndRates();
       setYearPill();
+      setTodayLine();
       renderMonth();
-    } else {
-      // nu afișăm "Wrong" la fiecare tastă, doar când încearcă cu buton / enter
     }
   }
 
@@ -964,6 +945,7 @@ window.addEventListener("blur", scheduleLock);
       hidePin();
       refreshMetaAndRates();
       setYearPill();
+      setTodayLine();
       renderMonth();
     } else {
       err.textContent = "Wrong PIN.";
@@ -975,7 +957,6 @@ window.addEventListener("blur", scheduleLock);
   document.getElementById("pinInput").addEventListener("keydown", (e) => { if(e.key === "Enter") unlockWithPin(); });
   document.getElementById("pinInput").addEventListener("input", () => { tryUnlockAuto(); });
 
-  // ===== ADMIN =====
   let adminUnlocked = false;
 
   function showAdmin(){
@@ -1052,7 +1033,6 @@ window.addEventListener("blur", scheduleLock);
     hideAdmin();
   });
 
-  // ===== BACKUP / RESTORE =====
   function exportData(){
     const backup = {};
     for (let i = 0; i < localStorage.length; i++){
@@ -1066,7 +1046,7 @@ window.addEventListener("blur", scheduleLock);
     a.download = "shiftpay-backup.json";
     a.click();
     URL.revokeObjectURL(url);
-    alert("Backup exportat ✅");
+    alert("Backup exported ✅");
   }
 
   function importDataFromFile(file){
@@ -1074,13 +1054,13 @@ window.addEventListener("blur", scheduleLock);
     reader.onload = (event) => {
       let data;
       try{ data = JSON.parse(event.target.result); }
-      catch(e){ alert("Fișier invalid (nu e JSON)."); return; }
+      catch(e){ alert("Invalid file (not JSON)."); return; }
 
       for(const key in data){
         localStorage.setItem(key, data[key]);
       }
 
-      alert("Backup importat ✅ (aplicația se reîncarcă)");
+      alert("Backup imported ✅");
       location.reload();
     };
     reader.readAsText(file);
@@ -1091,13 +1071,32 @@ window.addEventListener("blur", scheduleLock);
   document.getElementById("importFile").addEventListener("change", (e) => {
     const file = e.target.files && e.target.files[0];
     if(!file) return;
-    const ok = confirm("Importul va suprascrie datele curente. Continuăm?");
+    const ok = confirm("Import will overwrite current data. Continue?");
     if(!ok){ e.target.value = ""; return; }
     importDataFromFile(file);
   });
 
-  // ===== start =====
+  // Auto-lock when app loses focus
+  let lockTimer = null;
+  function lockNow(){
+    if (document.body.classList.contains("locked")) return;
+    try { document.getElementById("adminOverlay").style.display = "none"; } catch(e){}
+    document.body.classList.add("locked");
+    showPin();
+  }
+  function scheduleLock(){
+    clearTimeout(lockTimer);
+    lockTimer = setTimeout(lockNow, 0);
+  }
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") scheduleLock();
+  });
+  window.addEventListener("pagehide", scheduleLock);
+  window.addEventListener("blur", scheduleLock);
+
   refreshMetaAndRates();
+  setYearPill();
+  setTodayLine();
 
   (async () => {
     await ensurePinInitialized();
@@ -1105,83 +1104,37 @@ window.addEventListener("blur", scheduleLock);
   })();
 </script>
 
+<!-- AUTO UPDATE service worker (auto refresh when update is available) -->
 <script>
-  (function () {
-    if (!("serviceWorker" in navigator)) return;
+(function () {
+  if (!("serviceWorker" in navigator)) return;
 
-    const bar = document.getElementById("updateBar");
-    const btn = document.getElementById("btnUpdateNow");
+  navigator.serviceWorker.register("./sw.js", { scope: "./" }).then((reg) => {
+    setInterval(() => reg.update(), 30000);
 
-    function showUpdate() {
-      if (bar) bar.style.display = "flex";
-    }
-
-    navigator.serviceWorker.register("./sw.js", { scope: "./" }).then((reg) => {
-      // dacă există un SW nou care așteaptă => show update
-      if (reg.waiting) showUpdate();
-
-      reg.addEventListener("updatefound", () => {
-        const newWorker = reg.installing;
-        if (!newWorker) return;
-        newWorker.addEventListener("statechange", () => {
-          if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-            showUpdate();
-          }
-        });
-      });
-
-      if (btn) {
-        btn.addEventListener("click", () => {
-          // spune-i SW-ului nou să devină activ
+    reg.addEventListener("updatefound", () => {
+      const nw = reg.installing;
+      if (!nw) return;
+      nw.addEventListener("statechange", () => {
+        if (nw.state === "installed" && navigator.serviceWorker.controller) {
           if (reg.waiting) reg.waiting.postMessage({ type: "SKIP_WAITING" });
-        });
-      }
+        }
+      });
     });
 
-    // când SW-ul nou devine activ, dă refresh automat
-    navigator.serviceWorker.addEventListener("controllerchange", () => {
-      window.location.reload();
-    });
-  })();
-</script>
-  }
+    if (reg.waiting && navigator.serviceWorker.controller) {
+      reg.waiting.postMessage({ type: "SKIP_WAITING" });
+    }
+  });
+
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (refreshing) return;
+    refreshing = true;
+    window.location.reload();
+  });
+})();
 </script>
 
-<div id="updateBar" style="
-  position: fixed;
-  left: 12px;
-  right: 12px;
-  bottom: 12px;
-  z-index: 99999;
-  display: none;
-  gap: 10px;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 14px;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.18);
-  background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(12px);
-  color: rgba(255,255,255,0.92);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.45);
-">
-  <div style="font-weight: 800;">Update available</div>
-  <button id="btnUpdateNow" style="
-    padding: 10px 14px;
-    border-radius: 12px;
-    border: 0;
-    background: #22c55e;
-    color: white;
-    font-weight: 900;
-    cursor: pointer;
-  ">Update</button>
-</div>
 </body>
 </html>
-
-
-
-
-
-
-
