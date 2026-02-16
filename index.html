@@ -1106,8 +1106,44 @@ window.addEventListener("blur", scheduleLock);
 </script>
 
 <script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("./sw.js", { scope: "./" });
+  (function () {
+    if (!("serviceWorker" in navigator)) return;
+
+    const bar = document.getElementById("updateBar");
+    const btn = document.getElementById("btnUpdateNow");
+
+    function showUpdate() {
+      if (bar) bar.style.display = "flex";
+    }
+
+    navigator.serviceWorker.register("./sw.js", { scope: "./" }).then((reg) => {
+      // dacă există un SW nou care așteaptă => show update
+      if (reg.waiting) showUpdate();
+
+      reg.addEventListener("updatefound", () => {
+        const newWorker = reg.installing;
+        if (!newWorker) return;
+        newWorker.addEventListener("statechange", () => {
+          if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+            showUpdate();
+          }
+        });
+      });
+
+      if (btn) {
+        btn.addEventListener("click", () => {
+          // spune-i SW-ului nou să devină activ
+          if (reg.waiting) reg.waiting.postMessage({ type: "SKIP_WAITING" });
+        });
+      }
+    });
+
+    // când SW-ul nou devine activ, dă refresh automat
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      window.location.reload();
+    });
+  })();
+</script>
   }
 </script>
 
@@ -1142,6 +1178,7 @@ window.addEventListener("blur", scheduleLock);
 </div>
 </body>
 </html>
+
 
 
 
