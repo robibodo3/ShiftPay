@@ -24,13 +24,10 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
-// HTML: network-first (pull latest when online)
-// Other assets: cache-first
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   const url = new URL(req.url);
 
-  // Only handle same-origin requests
   if (url.origin !== self.location.origin) return;
 
   const accept = req.headers.get("accept") || "";
@@ -51,7 +48,6 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     caches.match(req).then((cached) => {
       if (cached) return cached;
-
       return fetch(req).then((res) => {
         const copy = res.clone();
         caches.open(CACHE).then((cache) => cache.put(req, copy));
@@ -61,7 +57,6 @@ self.addEventListener("fetch", (event) => {
   );
 });
 
-// Allow page to activate new SW immediately
 self.addEventListener("message", (event) => {
   if (event.data && event.data.type === "SKIP_WAITING") {
     self.skipWaiting();
