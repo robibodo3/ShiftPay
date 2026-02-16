@@ -1,4 +1,4 @@
-const CACHE = "shiftpay-cache-v1"; // nu mai schimbi manual, se ocupă el
+const CACHE = "shiftpay-cache-auto-v1";
 const ASSETS = [
   "./",
   "./index.html",
@@ -8,10 +8,8 @@ const ASSETS = [
 ];
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE).then((cache) => cache.addAll(ASSETS))
-  );
-  self.skipWaiting(); // pregătește update-ul imediat
+  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)));
+  self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
@@ -23,22 +21,18 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
-// Network-first pentru HTML, cache-first pentru rest.
-// Asta înseamnă: dacă ai net, ia versiunea nouă.
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   const url = new URL(req.url);
-
-  // doar pentru site-ul tău
   if (url.origin !== location.origin) return;
 
-  // HTML: network-first
+  // HTML: always try network first => pulls latest
   if (req.headers.get("accept")?.includes("text/html")) {
     event.respondWith(
       fetch(req)
         .then((res) => {
           const copy = res.clone();
-          caches.open(CACHE).then((cache) => cache.put(req, copy));
+          caches.open(CACHE).then((c) => c.put(req, copy));
           return res;
         })
         .catch(() => caches.match(req).then((r) => r || caches.match("./index.html")))
@@ -46,22 +40,20 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Rest: cache-first, apoi network
+  // others: cache first
   event.respondWith(
     caches.match(req).then((cached) => {
       if (cached) return cached;
       return fetch(req).then((res) => {
         const copy = res.clone();
-        caches.open(CACHE).then((cache) => cache.put(req, copy));
+        caches.open(CACHE).then((c) => c.put(req, copy));
         return res;
       });
     })
   );
 });
 
-// Primește mesaj din pagină ca să activeze update-ul instant
+// allow page to force-activate new SW
 self.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "SKIP_WAITING") {
-    self.skipWaiting();
-  }
+  if (event.data && event.data.type === "SKIP_WAITING") self.skipWaiting();
 });
